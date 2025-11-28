@@ -25,11 +25,11 @@ public class GameScreen implements Screen {
 
         // Load assets here.
         player = new Player(0, 0);
-        gameMap = new GameMap("Tiled/grassland.tmx");
+        gameMap = new GameMap("Tiled/overworld1.tmx");
 
         camera = (OrthographicCamera) game.viewport.getCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        camera.zoom = 0.85f; // less is closer, more is farther
+        camera.zoom = 1f; // less is closer, more is farther
     }
 
     @Override
