@@ -3,10 +3,10 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "Rules/OverworldTile_Rules.tmx",
+    "activeFile": "overworld1.tmx",
     "expandedProjectPaths": [
-        ".",
-        "Rules"
+        "Rules",
+        "."
     ],
     "fileStates": {
         "Dungeon_Tileset.tsx": {
@@ -30,11 +30,14 @@
             "scaleInEditor": 4
         },
         "Rules/OverworldTile_Rules.tmx": {
-            "scale": 2,
-            "selectedLayer": 3,
+            "expandedObjectLayers": [
+                7
+            ],
+            "scale": 4,
+            "selectedLayer": 5,
             "viewCenter": {
-                "x": 206.75,
-                "y": 199.75
+                "x": 107.625,
+                "y": 150.125
             }
         },
         "Rules/Overworld_Tileset.tsx": {
@@ -49,19 +52,19 @@
             "scaleInEditor": 5.5
         },
         "grassland.tmx": {
-            "scale": 2,
+            "scale": 1.5,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 236.5,
-                "y": 340.25
+                "x": 258.33333333333337,
+                "y": 173.66666666666663
             }
         },
         "overworld1.tmx": {
-            "scale": 1.5,
-            "selectedLayer": 1,
+            "scale": 3,
+            "selectedLayer": 3,
             "viewCenter": {
-                "x": 880,
-                "y": 480.33333333333337
+                "x": 189.49999999999997,
+                "y": 790.1666666666666
             }
         },
         "water_tile_anim.tsx": {
@@ -95,9 +98,9 @@
         "Dungeon_Tileset.tsx",
         "Overworld_Tileset.tsx",
         "grassland.tmx",
-        "overworld1.tmx",
-        "Prototype_Tileset.tsx",
         "Rules/OverworldTile_Rules.tmx",
+        "Prototype_Tileset.tsx",
+        "overworld1.tmx",
         "edge_water_tile_anim_strip_8.tsx",
         "Rules/edge_water_tile_anim_strip_8.tsx",
         "water_tile_anim_strip_8.tsx",

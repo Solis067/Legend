@@ -8,10 +8,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 
 
-public class Player {
-    Vector2 pos;
-    Vector2 vel;
-    
+public class Player extends Entity {
     Texture[] idleTextures;
     Texture[] runTextures;
     Texture[] attackTextures;
@@ -34,9 +31,6 @@ public class Player {
     private final float PLAYER_SPEED = 5.0f;
     private final float PLAYER_ANIMATION_SPEED = 1.5f; // lower is faster
 
-    private final int FRAME_COLS = 6;
-    private final int FRAME_ROWS = 1;
-
     float stateTime;
 
     public Player(int x , int y) {
@@ -45,21 +39,6 @@ public class Player {
         currentDirection = Direction.DOWN;
         stateTime = 0f;
         setupAnimations();        
-    }
-
-    private Animation<TextureRegion> makeAnimation(Texture texture, float speed) {
-        // determine per-texture frame dimensions so different-sized source images split correctly
-        int frameWidth = texture.getWidth() / FRAME_COLS;
-        int frameHeight = texture.getHeight() / FRAME_ROWS;
-
-        TextureRegion[][] tmpFrames = TextureRegion.split(texture, frameWidth, frameHeight);
-        int cols = tmpFrames[0].length;
-        TextureRegion[] animationFrames = new TextureRegion[cols];
-        for (int i = 0; i < cols; i++) {
-            animationFrames[i] = tmpFrames[0][i];
-        }
-
-        return new Animation<TextureRegion>(0.1f * speed, animationFrames);
     }
 
     @SuppressWarnings("unchecked")
@@ -77,13 +56,13 @@ public class Player {
         String[] dirNames = new String[] {"down", "left", "right", "up"};
         for (int i = 0; i < dirCount; i++) {
             idleTextures[i] = new Texture(Gdx.files.internal("Char_Sprites/char_idle_" + dirNames[i] + "_anim_strip_6.png"));
-            idleAnimations[i] = makeAnimation(idleTextures[i], PLAYER_ANIMATION_SPEED);
+            idleAnimations[i] = makeAnimation(idleTextures[i], 6, 1, PLAYER_ANIMATION_SPEED);
 
             runTextures[i] = new Texture(Gdx.files.internal("Char_Sprites/char_run_" + dirNames[i] + "_anim_strip_6.png"));
-            runAnimations[i] = makeAnimation(runTextures[i], PLAYER_ANIMATION_SPEED);
+            runAnimations[i] = makeAnimation(runTextures[i], 6, 1, PLAYER_ANIMATION_SPEED);
 
             attackTextures[i] = new Texture(Gdx.files.internal("Char_Sprites/char_attack_" + dirNames[i] + "_anim_strip_6.png"));
-            attackAnimations[i] = makeAnimation(attackTextures[i], PLAYER_ANIMATION_SPEED / 1.5f);
+            attackAnimations[i] = makeAnimation(attackTextures[i], 6, 1, PLAYER_ANIMATION_SPEED / 1.5f);
         }
 
         currentFrame = idleAnimations[currentDirection.ordinal()].getKeyFrame(0);
@@ -92,17 +71,15 @@ public class Player {
     public void input() {
         vel.x = 0;
         vel.y = 0;
-        // If attack just started, lock movement
+        
         if (Gdx.input.isKeyJustPressed(Input.Keys.Z) && !isAttacking) {
             isAttacking = true;
             attackTime = 0f;
-            // stop movement immediately
             vel.x = 0;
             vel.y = 0;
             return;
         }
 
-        // While attacking, ignore movement input
         if (isAttacking) {
             return;
         }
@@ -126,7 +103,7 @@ public class Player {
     public void update(float delta) {
         stateTime += delta;
 
-        // If attacking, advance attack timer and play attack animation. Player can't move while attacking.
+        // If attacking
         if (isAttacking) {
             attackTime += delta;
             Animation<TextureRegion> atk = attackAnimations[currentDirection.ordinal()];
@@ -208,20 +185,8 @@ public class Player {
     }
 
     public void dispose() {
-        if (idleTextures != null) {
-            for (Texture t : idleTextures) {
-                if (t != null) t.dispose();
-            }
-        }
-        if (runTextures != null) {
-            for (Texture t : runTextures) {
-                if (t != null) t.dispose();
-            }
-        }
-        if (attackTextures != null) {
-            for (Texture t : attackTextures) {
-                if (t != null) t.dispose();
-            }
-        }
-    }
+        disposeTextures(idleTextures);
+        disposeTextures(runTextures);
+        disposeTextures(attackTextures);
+    } 
 }
