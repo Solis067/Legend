@@ -22,15 +22,19 @@
             }
         },
         "Overworld_Tileset.tsx": {
-            "scaleInDock": 3,
+            "scaleInDock": 1.5,
             "scaleInEditor": 3
         },
+        "Prototype_Tileset.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 4
+        },
         "Rules/OverworldTile_Rules.tmx": {
-            "scale": 1.5,
-            "selectedLayer": 0,
+            "scale": 2,
+            "selectedLayer": 3,
             "viewCenter": {
-                "x": 546.3333333333334,
-                "y": 256.99999999999994
+                "x": 206.75,
+                "y": 199.75
             }
         },
         "Rules/Overworld_Tileset.tsx": {
@@ -46,10 +50,18 @@
         },
         "grassland.tmx": {
             "scale": 2,
-            "selectedLayer": 0,
+            "selectedLayer": 3,
             "viewCenter": {
-                "x": 449.75,
-                "y": 185.25
+                "x": 236.5,
+                "y": 340.25
+            }
+        },
+        "overworld1.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 880,
+                "y": 480.33333333333337
             }
         },
         "water_tile_anim.tsx": {
@@ -63,7 +75,7 @@
     },
     "frame.defaultDuration": 100,
     "last.externalTilesetPath": "C:/Users/Alex/Documents/VSCode/Java/Legend/assets/Tiled",
-    "last.imagePath": "C:/Users/Alex/Documents/VSCode/Java/Legend/assets/Tiles_(animated)/Overworld",
+    "last.imagePath": "C:/Users/Alex/Documents/VSCode/Java/Legend/assets/Tilesets",
     "map.height": 64,
     "map.lastUsedFormat": "tmx",
     "map.tileHeight": 16,
@@ -73,7 +85,9 @@
         "Dungeon_Tileset.tsx",
         "Overworld_Tileset.tsx",
         "grassland.tmx",
-        "Rules/OverworldTile_Rules.tmx"
+        "Rules/OverworldTile_Rules.tmx",
+        "Prototype_Tileset.tsx",
+        "overworld1.tmx"
     ],
     "project": "LegendTiled.tiled-project",
     "property.type": "bool",
@@ -81,6 +95,8 @@
         "Dungeon_Tileset.tsx",
         "Overworld_Tileset.tsx",
         "grassland.tmx",
+        "overworld1.tmx",
+        "Prototype_Tileset.tsx",
         "Rules/OverworldTile_Rules.tmx",
         "edge_water_tile_anim_strip_8.tsx",
         "Rules/edge_water_tile_anim_strip_8.tsx",
