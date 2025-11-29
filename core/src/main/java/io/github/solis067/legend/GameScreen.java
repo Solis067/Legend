@@ -7,7 +7,9 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
-
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.World;
 
 /** First screen of the application. Displayed after the application is created. */
 public class GameScreen implements Screen {
@@ -18,14 +20,19 @@ public class GameScreen implements Screen {
     GameMap gameMap;
     OrthographicCamera camera;
 
+    World world;
+    Box2DDebugRenderer debugRenderer;
 
     public GameScreen(Main game) {
         // Initialize your screen here. Store a reference to the "game" instance if needed.
         this.game = game;
 
         // Load assets here.
-        player = new Player(0, 0);
-        gameMap = new GameMap("Tiled/overworld1.tmx");
+        world = new World(new Vector2(0f, 0f), true);
+        debugRenderer = new Box2DDebugRenderer();
+
+        player = new Player(0, 0, world);
+        gameMap = new GameMap("Tiled/grassland.tmx", world);
 
         camera = (OrthographicCamera) game.viewport.getCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -50,6 +57,7 @@ public class GameScreen implements Screen {
     }
 
     private void logic(float delta) {
+        world.step(delta, 6, 2);
         player.update(delta);
     }
 
@@ -66,11 +74,12 @@ public class GameScreen implements Screen {
 
         // Render Map
         gameMap.render(camera);
+        debugRenderer.render(world, camera.combined);
 
         // Sprites
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
-
+        
         player.draw(game);
 
         game.batch.end();
@@ -100,5 +109,6 @@ public class GameScreen implements Screen {
     public void dispose() {
         player.dispose();
         gameMap.dispose();
+        world.dispose();
     }
 }

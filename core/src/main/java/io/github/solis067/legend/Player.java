@@ -3,6 +3,11 @@ package io.github.solis067.legend;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -16,6 +21,7 @@ public class Player extends Entity {
     Animation<TextureRegion>[] runAnimations;
     Animation<TextureRegion>[] attackAnimations;
     TextureRegion currentFrame;
+    Body body;
 
     private final float textureWidth = Main.TILE_PIXELS;
     private final float textureHeight = Main.TILE_PIXELS;
@@ -39,6 +45,12 @@ public class Player extends Entity {
         currentDirection = Direction.DOWN;
         stateTime = 0f;
         setupAnimations();        
+    }
+
+    // New constructor that creates a physics body in the given World (if not null)
+    public Player(int x, int y, World world) {
+        this(x, y);
+        if (world != null) createBody(world, x, y);
     }
 
     @SuppressWarnings("unchecked")
@@ -114,12 +126,15 @@ public class Player extends Entity {
                 attackTime = 0f;
                 stateTime = 0f;
             }
-            return;
         }
 
-        // Movement and other animations when not attacking
-        pos.x += vel.x * delta;
-        pos.y += vel.y * delta;
+        body.setLinearVelocity(vel.x, vel.y);
+        pos.x = body.getPosition().x - playerWidth / 2f;
+        pos.y = body.getPosition().y - (playerHeight / 2f) + 0.25f; // slight offset for better ground alignment
+
+        if (isAttacking) {
+            return;
+        }
 
         if (vel.x > 0) {
             currentFrame = runAnimations[Direction.RIGHT.ordinal()].getKeyFrame(stateTime, true);
@@ -188,5 +203,30 @@ public class Player extends Entity {
         disposeTextures(idleTextures);
         disposeTextures(runTextures);
         disposeTextures(attackTextures);
+        if (body != null && body.getWorld() != null) {
+            body.getWorld().destroyBody(body);
+            body = null;
+        }
     } 
+
+    private void createBody(World world, int x, int y) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        // Body positioned at center of sprite
+        bodyDef.position.set(x + playerWidth / 2f, y + playerHeight / 2f);
+        body = world.createBody(bodyDef);
+        body.setFixedRotation(true);
+        body.setLinearDamping(0.25f);
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(playerWidth / 2.8f, playerHeight / 4f);
+
+        FixtureDef fixture = new FixtureDef();
+        fixture.shape = shape;
+        fixture.density = 1f;
+        fixture.friction = 0.2f;
+        fixture.restitution = 0f;
+        body.createFixture(fixture);
+        shape.dispose();
+    }
 }
