@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "overworld1.tmx",
+    "activeFile": "grassland.tmx",
     "expandedProjectPaths": [
         "Rules",
         "."
@@ -36,8 +36,8 @@
             "scale": 4,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 107.625,
-                "y": 150.125
+                "x": 126.125,
+                "y": 401.375
             }
         },
         "Rules/Overworld_Tileset.tsx": {
@@ -52,19 +52,22 @@
             "scaleInEditor": 5.5
         },
         "grassland.tmx": {
-            "scale": 1.5,
-            "selectedLayer": 3,
+            "expandedObjectLayers": [
+                6
+            ],
+            "scale": 3,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 258.33333333333337,
-                "y": 173.66666666666663
+                "x": 171.49999999999997,
+                "y": 99.16666666666669
             }
         },
         "overworld1.tmx": {
-            "scale": 3,
+            "scale": 1.5,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 189.49999999999997,
-                "y": 790.1666666666666
+                "x": 329.66666666666663,
+                "y": 798.3333333333333
             }
         },
         "water_tile_anim.tsx": {
@@ -85,8 +88,6 @@
     "map.tileWidth": 16,
     "map.width": 128,
     "openFiles": [
-        "Dungeon_Tileset.tsx",
-        "Overworld_Tileset.tsx",
         "grassland.tmx",
         "Rules/OverworldTile_Rules.tmx",
         "Prototype_Tileset.tsx",
@@ -95,12 +96,12 @@
     "project": "LegendTiled.tiled-project",
     "property.type": "bool",
     "recentFiles": [
-        "Dungeon_Tileset.tsx",
-        "Overworld_Tileset.tsx",
-        "grassland.tmx",
-        "Rules/OverworldTile_Rules.tmx",
         "Prototype_Tileset.tsx",
         "overworld1.tmx",
+        "Rules/OverworldTile_Rules.tmx",
+        "grassland.tmx",
+        "Overworld_Tileset.tsx",
+        "Dungeon_Tileset.tsx",
         "edge_water_tile_anim_strip_8.tsx",
         "Rules/edge_water_tile_anim_strip_8.tsx",
         "water_tile_anim_strip_8.tsx",
