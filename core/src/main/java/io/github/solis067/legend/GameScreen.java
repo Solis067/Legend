@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
-
+import com.badlogic.gdx.physics.box2d.World;
 
 /** First screen of the application. Displayed after the application is created. */
 public class GameScreen implements Screen {
@@ -18,6 +18,7 @@ public class GameScreen implements Screen {
     GameMap gameMap;
     OrthographicCamera camera;
 
+    World world;
 
     public GameScreen(Main game) {
         // Initialize your screen here. Store a reference to the "game" instance if needed.
