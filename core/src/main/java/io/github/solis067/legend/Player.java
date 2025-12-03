@@ -20,13 +20,10 @@ public class Player extends Entity {
     Animation<TextureRegion>[] idleAnimations;
     Animation<TextureRegion>[] runAnimations;
     Animation<TextureRegion>[] attackAnimations;
-    TextureRegion currentFrame;
     Body body;
 
-    private final float textureWidth = Main.TILE_PIXELS;
-    private final float textureHeight = Main.TILE_PIXELS;
-    private final float playerWidth = textureWidth * Main.UNIT_SCALE;
-    private final float playerHeight = textureHeight * Main.UNIT_SCALE;
+    private final float playerWidth = ENTITY_WIDTH;
+    private final float playerHeight = ENTITY_HEIGHT;
 
 
     private enum Direction { DOWN, LEFT, RIGHT, UP }
@@ -37,20 +34,15 @@ public class Player extends Entity {
     private final float PLAYER_SPEED = 5.0f;
     private final float PLAYER_ANIMATION_SPEED = 1.5f; // lower is faster
 
-    float stateTime;
+    
 
-    public Player(int x , int y) {
+    public Player(World world, int x , int y) {
         pos = new Vector2(x, y);
         vel = new Vector2(0, 0);
+        createBody(world, x, y);
         currentDirection = Direction.DOWN;
         stateTime = 0f;
         setupAnimations();        
-    }
-
-    // New constructor that creates a physics body in the given World (if not null)
-    public Player(int x, int y, World world) {
-        this(x, y);
-        if (world != null) createBody(world, x, y);
     }
 
     @SuppressWarnings("unchecked")
@@ -213,13 +205,13 @@ public class Player extends Entity {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         // Body positioned at center of sprite
-        bodyDef.position.set(x + playerWidth / 2f, y + playerHeight / 2f);
+        bodyDef.position.set(x + ENTITY_WIDTH / 2f, y + ENTITY_HEIGHT / 2f);
         body = world.createBody(bodyDef);
         body.setFixedRotation(true);
         body.setLinearDamping(0.25f);
 
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(playerWidth / 2.8f, playerHeight / 4f);
+        shape.setAsBox(ENTITY_WIDTH / 2.8f, ENTITY_HEIGHT / 4f);
 
         FixtureDef fixture = new FixtureDef();
         fixture.shape = shape;

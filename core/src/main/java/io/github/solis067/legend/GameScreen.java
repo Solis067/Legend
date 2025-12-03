@@ -17,6 +17,7 @@ public class GameScreen implements Screen {
 
     Texture playerTexture;
     Player player;
+    Slime slime;
     GameMap gameMap;
     OrthographicCamera camera;
 
@@ -31,7 +32,9 @@ public class GameScreen implements Screen {
         world = new World(new Vector2(0f, 0f), true);
         debugRenderer = new Box2DDebugRenderer();
 
-        player = new Player(0, 0, world);
+        player = new Player(world, 0, 0);
+        slime = new Slime(world, 5, 5);
+        
         gameMap = new GameMap("Tiled/grassland.tmx", world);
 
         camera = (OrthographicCamera) game.viewport.getCamera();
@@ -58,6 +61,7 @@ public class GameScreen implements Screen {
 
     private void logic(float delta) {
         world.step(delta, 6, 2);
+        slime.update(delta);
         player.update(delta);
     }
 
@@ -79,7 +83,9 @@ public class GameScreen implements Screen {
         // Sprites
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
+
         
+        slime.draw(game);
         player.draw(game);
 
         game.batch.end();

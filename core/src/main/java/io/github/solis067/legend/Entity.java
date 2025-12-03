@@ -4,10 +4,18 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 
 public class Entity {
     Vector2 pos;
     Vector2 vel;
+    TextureRegion currentFrame;
+    Body body;
+
+    float stateTime;
+
+    final float ENTITY_WIDTH = Main.TILE_PIXELS * Main.UNIT_SCALE;
+    final float ENTITY_HEIGHT = Main.TILE_PIXELS * Main.UNIT_SCALE;
 
     protected Animation<TextureRegion> makeAnimation(Texture texture, int cols, int rows, float speed) {
         // determine per-texture frame dimensions so different-sized source images split correctly
