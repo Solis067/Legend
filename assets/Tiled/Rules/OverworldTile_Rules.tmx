@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="128" height="64" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="1">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="128" height="64" tilewidth="16" tileheight="16" infinite="0" nextlayerid="8" nextobjectid="83">
  <properties>
   <property name="DeleteTiles" type="bool" value="true"/>
  </properties>
@@ -347,4 +347,27 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
+ <objectgroup id="7" name="output_collisions">
+  <object id="18" x="352.125" y="176.125" width="15.75" height="15.75"/>
+  <object id="37" x="80" y="336" height="16"/>
+  <object id="38" x="128" y="336" height="16"/>
+  <object id="39" x="96" y="384" height="16"/>
+  <object id="40" x="144" y="384" height="16"/>
+  <object id="41" x="256" y="400" width="16"/>
+  <object id="43" x="272" y="400" height="16"/>
+  <object id="44" x="48" y="400" width="16"/>
+  <object id="52" x="48" y="160" width="16"/>
+  <object id="55" x="80" y="160" width="16"/>
+  <object id="58" x="128" y="144" height="16"/>
+  <object id="59" x="176" y="144" height="16"/>
+  <object id="60" x="224" y="160" width="16"/>
+  <object id="61" x="240" y="160" height="16"/>
+  <object id="63" x="304" y="160" height="16"/>
+  <object id="64" x="288" y="176" width="16"/>
+  <object id="65" x="352" y="160" height="16"/>
+  <object id="66" x="352" y="176" width="16"/>
+  <object id="72" x="416" y="160" height="16"/>
+  <object id="74" x="416" y="160" width="16"/>
+  <object id="82" x="16" y="388.043" width="16" height="10"/>
+ </objectgroup>
 </map>

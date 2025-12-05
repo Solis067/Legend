@@ -3,9 +3,20 @@ package io.github.solis067.legend;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.maps.MapLayer;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GameMap {
     TiledMap tiledMap;
@@ -13,12 +24,54 @@ public class GameMap {
     
     OrthogonalTiledMapRenderer mapRenderer;
 
+    World world;
+    List<Body> createdBodies = new ArrayList<>();
+
     public GameMap(String mapFilePath) {
         mapLoader = new TmxMapLoader();
         tiledMap = mapLoader.load(mapFilePath);
 
         // Use unit scale so map pixels convert to world units (1 world unit = TILE_PIXELS pixels)
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap, Main.UNIT_SCALE);
+    }
+
+    public GameMap(String mapFilePath, World world) {
+        this(mapFilePath);
+        this.world = world;
+
+        if (world == null) return;
+
+        // Create static bodies for colli
+        String[] layerNames = new String[] {"collisions"};
+        for (String layerName : layerNames) {
+            MapLayer layer = tiledMap.getLayers().get(layerName);
+            if (layer == null) continue;
+
+            // Object rectangles
+            for (MapObject obj : layer.getObjects()) {
+                if (obj instanceof RectangleMapObject) {
+                    Rectangle rect = ((RectangleMapObject) obj).getRectangle();
+                    BodyDef bodyDef = new BodyDef();
+                    bodyDef.type = BodyDef.BodyType.StaticBody;
+                    float bodyX = (rect.x + rect.width / 2f) * Main.UNIT_SCALE;
+                    float bodyY = (rect.y + rect.height / 2f) * Main.UNIT_SCALE;
+                    bodyDef.position.set(bodyX, bodyY);
+
+                    Body body = world.createBody(bodyDef);
+
+                    PolygonShape shape = new PolygonShape();
+                    shape.setAsBox((rect.width / 2f) * Main.UNIT_SCALE, (rect.height / 2f) * Main.UNIT_SCALE);
+
+                    FixtureDef fixtureDef = new FixtureDef();
+                    fixtureDef.shape = shape;
+                    fixtureDef.friction = 0f;
+                    fixtureDef.restitution = 0f;
+                    body.createFixture(fixtureDef);
+                    shape.dispose();
+                    createdBodies.add(body);
+                }
+            }
+        }
     }
 
     public float getSizeX() {
@@ -40,6 +93,14 @@ public class GameMap {
     public void dispose() {
         tiledMap.dispose();
         mapRenderer.dispose();
+        if (world != null) {
+            for (Body b : createdBodies) {
+                if (b != null && b.getWorld() != null) {
+                    world.destroyBody(b);
+                }
+            }
+            createdBodies.clear();
+        }
     }
 
 }
