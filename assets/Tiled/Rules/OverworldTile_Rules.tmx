@@ -444,7 +444,7 @@
   <object id="100" x="288.5" y="272.25" width="15.25" height="13.25"/>
   <object id="105" x="352.125" y="272.625" width="15.875" height="13.125"/>
   <object id="106" x="416" y="272" width="16" height="16"/>
-  <object id="107" x="24.6667" y="561" width="14.6667" height="9.33333"/>
-  <object id="108" x="69.3333" y="567.333" width="68.3333" height="24.3333"/>
+  <object id="107" x="25.9394" y="561" width="11.8485" height="8.24242"/>
+  <object id="108" x="70.6969" y="566.788" width="65.5151" height="20.3333"/>
  </objectgroup>
 </map>

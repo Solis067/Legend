@@ -32,6 +32,7 @@ public class Player extends Entity {
     boolean isTakingDamage = false;
     float attackTime = 0f;
     float damageTimer = 0f;
+    private boolean dead = false;
 
     private final float PLAYER_SPEED = 5.0f;
     private final float PLAYER_ANIMATION_SPEED = 1.5f; // lower is faster
@@ -136,6 +137,13 @@ public class Player extends Entity {
 
     public void update(float delta) {
         stateTime += delta;
+
+        if (dead) {
+            body.setLinearVelocity(0f, 0f);
+            pos.x = body.getPosition().x - playerWidth / 2f;
+            pos.y = body.getPosition().y - (playerHeight / 2f) + 0.25f;
+            return;
+        }
 
         // If attacking
         if (isAttacking) {
@@ -245,16 +253,23 @@ public class Player extends Entity {
     } 
 
     public void takeDamage(int damage) {
+        if (dead) {
+            return;
+        }
+
         damageTimer = 0f; // reset damage timer to start hit animation from beginning
         isTakingDamage = true;
-
-        if (health > 0) {
-            health -= damage;
-            Gdx.app.log("Player", "Player took " + damage + " damage. Health: " + health);
-        }
+        health = Math.max(health - damage, 0);
+        Gdx.app.log("Player", "Player took " + damage + " damage. Health: " + health);
 
         if (health <= 0) {
+            dead = true;
+            vel.setZero();
             Gdx.app.log("Player", "Player died!");
         }
+    }
+
+    public boolean isDead() {
+        return dead;
     }
 }

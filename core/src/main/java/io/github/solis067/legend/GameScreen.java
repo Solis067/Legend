@@ -29,6 +29,7 @@ public class GameScreen implements Screen {
 
     MyContectListener contactListener;
     GameUI gameUI;
+    private boolean gameOverTriggered = false;
 
     public GameScreen(Main game) {
         // Initialize your screen here. Store a reference to the "game" instance if needed.
@@ -63,6 +64,9 @@ public class GameScreen implements Screen {
         // Draw your screen here. "delta" is the time since last render in seconds.
         input();
         logic(delta);
+        if (checkGameOver()) {
+            return;
+        }
         draw();
     }
 
@@ -76,6 +80,21 @@ public class GameScreen implements Screen {
         player.update(delta);
         contactListener.update(delta);
         gameUI.update(delta);
+    }
+
+    private boolean checkGameOver() {
+        if (gameOverTriggered) {
+            return true;
+        }
+
+        if (player.isDead()) {
+            gameOverTriggered = true;
+            game.setScreen(new GameOverScreen(game));
+            dispose();
+            return true;
+        }
+
+        return false;
     }
 
     private void draw() {

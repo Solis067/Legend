@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "grassland.tmx",
+    "activeFile": "overworld1.tmx",
     "expandedProjectPaths": [
         "Rules",
         "."
@@ -33,11 +33,11 @@
             "expandedObjectLayers": [
                 7
             ],
-            "scale": 3,
+            "scale": 11,
             "selectedLayer": 6,
             "viewCenter": {
-                "x": 331.16666666666663,
-                "y": 175.16666666666669
+                "x": 43.68181818181818,
+                "y": 562.0454545454545
             }
         },
         "Rules/Overworld_Tileset.tsx": {
@@ -58,16 +58,16 @@
             "scale": 1,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 168.5,
-                "y": 184.5
+                "x": 342.5,
+                "y": 187.5
             }
         },
         "overworld1.tmx": {
-            "scale": 1,
-            "selectedLayer": 0,
+            "scale": 1.5,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 470.5,
-                "y": 521.5
+                "x": 525,
+                "y": 473.66666666666663
             }
         },
         "water_tile_anim.tsx": {
@@ -88,18 +88,15 @@
     "map.tileWidth": 16,
     "map.width": 128,
     "openFiles": [
-        "grassland.tmx",
-        "Rules/OverworldTile_Rules.tmx",
-        "Prototype_Tileset.tsx",
         "overworld1.tmx"
     ],
     "project": "LegendTiled.tiled-project",
     "property.type": "bool",
     "recentFiles": [
         "overworld1.tmx",
-        "Prototype_Tileset.tsx",
-        "Rules/OverworldTile_Rules.tmx",
         "grassland.tmx",
+        "Rules/OverworldTile_Rules.tmx",
+        "Prototype_Tileset.tsx",
         "Overworld_Tileset.tsx",
         "Dungeon_Tileset.tsx",
         "edge_water_tile_anim_strip_8.tsx",

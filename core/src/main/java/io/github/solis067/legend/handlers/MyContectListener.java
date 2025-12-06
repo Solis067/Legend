@@ -30,8 +30,8 @@ public class MyContectListener implements ContactListener {
                 
                 Player player = (Player) playerFixture.getUserData();
                 
-                Gdx.app.log("Contact", "Player hit by slime! Damage: 1");
-                player.takeDamage(1);
+                Gdx.app.log("Contact", "Player hit by slime! Damage: 2");
+                player.takeDamage(2);
                 
                 // Start cooldown
                 playerHitCooldown = PLAYER_HIT_COOLDOWN;
