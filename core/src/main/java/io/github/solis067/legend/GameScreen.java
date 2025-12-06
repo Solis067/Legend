@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.audio.Music;
 
 import io.github.solis067.legend.handlers.MyContectListener;
 import io.github.solis067.legend.ui.GameUI;
@@ -23,6 +24,7 @@ public class GameScreen implements Screen {
     Slime slime;
     GameMap gameMap;
     OrthographicCamera camera;
+    Music overworldTheme;
 
     World world;
     Box2DDebugRenderer debugRenderer;
@@ -46,6 +48,7 @@ public class GameScreen implements Screen {
         slime = new Slime(world, "SLIME", 40, 25);
         
         gameMap = new GameMap("Tiled/overworld1.tmx", world);
+        overworldTheme = Gdx.audio.newMusic(Gdx.files.internal("Audio/Music/nes_07-jazz.wav"));
 
         gameUI = new GameUI(player, slime);
 
@@ -57,6 +60,9 @@ public class GameScreen implements Screen {
     @Override
     public void show() {
         // Prepare your screen here.
+        overworldTheme.setLooping(true);
+        overworldTheme.setVolume(0.4f);
+        overworldTheme.play();
     }
 
     @Override
@@ -170,6 +176,7 @@ public class GameScreen implements Screen {
     @Override
     public void hide() {
         // This method is called when another screen replaces this one.
+        overworldTheme.stop();
     }
 
     @Override
@@ -178,5 +185,7 @@ public class GameScreen implements Screen {
         gameMap.dispose();
         gameUI.dispose();
         world.dispose();
+        debugRenderer.dispose();
+        overworldTheme.dispose();
     }
 }

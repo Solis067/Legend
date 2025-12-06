@@ -10,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.audio.Sound;
 
 
 public class Player extends Entity {
@@ -21,6 +22,11 @@ public class Player extends Entity {
     Animation<TextureRegion>[] runAnimations;
     Animation<TextureRegion>[] attackAnimations;
     Animation<TextureRegion>[] hitAnimations;
+
+    Sound attackSound;
+    Sound hitSound;
+    Sound grassRunSound;
+    private float runStepTimer = 0f;
 
     private final float playerWidth = ENTITY_WIDTH;
     private final float playerHeight = ENTITY_HEIGHT;
@@ -36,12 +42,17 @@ public class Player extends Entity {
 
     private final float PLAYER_SPEED = 5.0f;
     private final float PLAYER_ANIMATION_SPEED = 1.5f; // lower is faster
+    private static final float RUN_STEP_INTERVAL = 0.4f; // seconds between footstep sounds
     
     public Player(World world, String id, int x , int y) {
         pos = new Vector2(x, y);
         vel = new Vector2(0, 0);
         this.id = id;
         health = 20;
+
+        attackSound = Gdx.audio.newSound(Gdx.files.internal("Audio/Sounds/attack.mp3"));
+        hitSound = Gdx.audio.newSound(Gdx.files.internal("Audio/Sounds/hit.mp3"));
+        grassRunSound = Gdx.audio.newSound(Gdx.files.internal("Audio/Sounds/run_grass.mp3"));
 
         createBody(world, x, y);
         currentDirection = Direction.DOWN;
@@ -112,6 +123,7 @@ public class Player extends Entity {
             attackTime = 0f;
             vel.x = 0;
             vel.y = 0;
+            if (attackSound != null) attackSound.play();
             return;
         }
 
@@ -196,6 +208,23 @@ public class Player extends Entity {
         else {
             currentFrame = idleAnimations[currentDirection.ordinal()].getKeyFrame(stateTime, true);
         }
+
+        handleRunSound(delta);
+    }
+
+    private void handleRunSound(float delta) {
+        boolean moving = vel.x != 0 || vel.y != 0;
+        if (moving) {
+            runStepTimer += delta;
+            if (runStepTimer >= RUN_STEP_INTERVAL) {
+                if (grassRunSound != null) {
+                    grassRunSound.play();
+                }
+                runStepTimer = 0f;
+            }
+        } else {
+            runStepTimer = 0f;
+        }
     }
 
     public void draw(Main game) {
@@ -232,6 +261,26 @@ public class Player extends Entity {
         game.batch.draw(currentFrame, pos.x + offsetX, pos.y + offsetY, drawWidth, drawHeight);
     }
 
+    public void takeDamage(int damage) {
+        if (dead) {
+            return;
+        }
+        
+        damageTimer = 0f; // reset damage timer to start hit animation from beginning
+        isTakingDamage = true;
+        health = Math.max(health - damage, 0);
+        if (hitSound != null) hitSound.play();
+
+        if (health <= 0) {
+            dead = true;
+            vel.setZero();
+        }
+    }
+
+    public boolean isDead() {
+        return dead;
+    }
+
     public float getWidth() {
         return playerWidth;
     }
@@ -245,31 +294,13 @@ public class Player extends Entity {
         disposeTextures(runTextures);
         disposeTextures(attackTextures);
         disposeTextures(hitTextures);
+        if (attackSound != null) attackSound.dispose();
+        if (hitSound != null) hitSound.dispose();
+        if (grassRunSound != null) grassRunSound.dispose();
 
         if (body != null && body.getWorld() != null) {
             body.getWorld().destroyBody(body);
             body = null;
         }
     } 
-
-    public void takeDamage(int damage) {
-        if (dead) {
-            return;
-        }
-
-        damageTimer = 0f; // reset damage timer to start hit animation from beginning
-        isTakingDamage = true;
-        health = Math.max(health - damage, 0);
-        Gdx.app.log("Player", "Player took " + damage + " damage. Health: " + health);
-
-        if (health <= 0) {
-            dead = true;
-            vel.setZero();
-            Gdx.app.log("Player", "Player died!");
-        }
-    }
-
-    public boolean isDead() {
-        return dead;
-    }
 }

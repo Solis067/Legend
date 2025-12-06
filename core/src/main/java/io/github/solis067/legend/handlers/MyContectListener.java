@@ -1,6 +1,5 @@
 package io.github.solis067.legend.handlers;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
@@ -29,8 +28,6 @@ public class MyContectListener implements ContactListener {
                 Fixture playerFixture = (fA.getUserData() instanceof Player) ? fA : fB;
                 
                 Player player = (Player) playerFixture.getUserData();
-                
-                Gdx.app.log("Contact", "Player hit by slime! Damage: 2");
                 player.takeDamage(2);
                 
                 // Start cooldown
