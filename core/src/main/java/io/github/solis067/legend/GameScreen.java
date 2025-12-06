@@ -41,10 +41,10 @@ public class GameScreen implements Screen {
         contactListener = new MyContectListener();
         world.setContactListener(contactListener);
 
-        player = new Player(world, "PLAYER", 0, 0);
-        slime = new Slime(world, "SLIME", 5, 5);
+        player = new Player(world, "PLAYER", 40, 20);
+        slime = new Slime(world, "SLIME", 40, 25);
         
-        gameMap = new GameMap("Tiled/grassland.tmx", world);
+        gameMap = new GameMap("Tiled/overworld1.tmx", world);
 
         gameUI = new GameUI(player, slime);
 
@@ -93,13 +93,38 @@ public class GameScreen implements Screen {
         gameMap.render(camera);
         debugRenderer.render(world, camera.combined);
 
-        // Sprites
+        // Sprites - draw entities in Y-order (higher Y = further back = drawn first)
+
+
         game.batch.setProjectionMatrix(camera.combined);
+
+
         game.batch.begin();
 
-        
-        slime.draw(game);
-        player.draw(game);
+
+
+        // Draw entities based on Y position
+
+
+        if (player.pos.y > slime.pos.y) {
+
+
+            player.draw(game);
+
+
+            slime.draw(game);
+
+
+        } else {
+
+
+            slime.draw(game);
+
+
+            player.draw(game);
+
+
+        }
 
         game.batch.end();
 

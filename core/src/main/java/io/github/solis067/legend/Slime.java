@@ -49,6 +49,28 @@ public class Slime extends Entity {
         currentFrame = idleAnimation.getKeyFrame(0);
     }
 
+    private void createBody(World world, int x, int y) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.fixedRotation = true;
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(x + ENTITY_WIDTH / 2f, y + ENTITY_HEIGHT / 2f);
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(ENTITY_WIDTH / 2.8f, ENTITY_HEIGHT / 4f);
+
+
+        FixtureDef fixture = new FixtureDef();
+        fixture.shape = shape;
+        fixture.density = 1.0f;
+        fixture.restitution = 15.0f;
+
+        this.body = world.createBody(bodyDef);
+        this.body.setLinearDamping(0.25f);
+        this.body.createFixture(fixture).setUserData(this);
+
+        shape.dispose();
+    }
+
     public void update(float delta) {
         stateTime += delta;
 
@@ -77,28 +99,6 @@ public class Slime extends Entity {
     public void draw(Main game) {
         // Drawing logic goes here
         game.batch.draw(currentFrame, pos.x, pos.y, ENTITY_WIDTH, ENTITY_HEIGHT);
-    }
-
-    private void createBody(World world, int x, int y) {
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.fixedRotation = true;
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(x + ENTITY_WIDTH / 2f, y + ENTITY_HEIGHT / 2f);
-
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(ENTITY_WIDTH / 2.8f, ENTITY_HEIGHT / 4f);
-
-
-        FixtureDef fixture = new FixtureDef();
-        fixture.shape = shape;
-        fixture.density = 1.0f;
-        fixture.restitution = 20.0f;
-
-        this.body = world.createBody(bodyDef);
-        this.body.setLinearDamping(0.25f);
-        this.body.createFixture(fixture).setUserData(this);
-
-        shape.dispose();
     }
 
     public void dispose() {

@@ -29,7 +29,9 @@ public class Player extends Entity {
     private Direction currentDirection; // 0: down, 1: left, 2: right, 3: up
     
     boolean isAttacking = false;
+    boolean isTakingDamage = false;
     float attackTime = 0f;
+    float damageTimer = 0f;
 
     private final float PLAYER_SPEED = 5.0f;
     private final float PLAYER_ANIMATION_SPEED = 1.5f; // lower is faster
@@ -75,6 +77,29 @@ public class Player extends Entity {
         }
 
         currentFrame = idleAnimations[currentDirection.ordinal()].getKeyFrame(0);
+    }
+
+    private void createBody(World world, int x, int y) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.fixedRotation = true;
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(x + ENTITY_WIDTH / 2f, y + ENTITY_HEIGHT / 2f);
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(ENTITY_WIDTH / 2.8f, ENTITY_HEIGHT / 4f);
+
+        FixtureDef fixture = new FixtureDef();
+        fixture.shape = shape;
+        fixture.density = 1.0f;
+        fixture.friction = 0.2f;
+        fixture.restitution = 0f;
+
+        this.body = world.createBody(bodyDef);
+        this.body.setLinearDamping(0.25f);
+        
+        this.body.createFixture(fixture).setUserData(this);
+
+        shape.dispose();
     }
 
     public void input() {
@@ -125,11 +150,22 @@ public class Player extends Entity {
             }
         }
 
+        if (isTakingDamage) {
+            damageTimer += delta;
+            currentFrame = hitAnimations[currentDirection.ordinal()].getKeyFrame(damageTimer, false);
+            // When the hit animation finishes, stop taking damage and reset timers so normal animations resume cleanly
+            if (hitAnimations[currentDirection.ordinal()].isAnimationFinished(damageTimer)) {
+                isTakingDamage = false;
+                damageTimer = 0f;
+                stateTime = 0f;
+            }
+        }
+
         body.setLinearVelocity(vel.x, vel.y);
         pos.x = body.getPosition().x - playerWidth / 2f;
         pos.y = body.getPosition().y - (playerHeight / 2f) + 0.25f; // slight offset for better ground alignment
 
-        if (isAttacking) {
+        if (isAttacking || isTakingDamage) {
             return;
         }
 
@@ -208,34 +244,12 @@ public class Player extends Entity {
         }
     } 
 
-    private void createBody(World world, int x, int y) {
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.fixedRotation = true;
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(x + ENTITY_WIDTH / 2f, y + ENTITY_HEIGHT / 2f);
-
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(ENTITY_WIDTH / 2.8f, ENTITY_HEIGHT / 4f);
-
-        FixtureDef fixture = new FixtureDef();
-        fixture.shape = shape;
-        fixture.density = 1.0f;
-        fixture.friction = 0.2f;
-        fixture.restitution = 0f;
-
-        this.body = world.createBody(bodyDef);
-        this.body.setLinearDamping(0.25f);
-        
-        this.body.createFixture(fixture).setUserData(this);
-
-        shape.dispose();
-    }
-
     public void takeDamage(int damage) {
-        health -= damage;
         damageTimer = 0f; // reset damage timer to start hit animation from beginning
+        isTakingDamage = true;
 
         if (health > 0) {
+            health -= damage;
             Gdx.app.log("Player", "Player took " + damage + " damage. Health: " + health);
         }
 
