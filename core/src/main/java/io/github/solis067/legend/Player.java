@@ -3,7 +3,6 @@ package io.github.solis067.legend;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
@@ -17,31 +16,32 @@ public class Player extends Entity {
     Texture[] idleTextures;
     Texture[] runTextures;
     Texture[] attackTextures;
+    Texture[] hitTextures;
     Animation<TextureRegion>[] idleAnimations;
     Animation<TextureRegion>[] runAnimations;
     Animation<TextureRegion>[] attackAnimations;
-    Body body;
+    Animation<TextureRegion>[] hitAnimations;
 
     private final float playerWidth = ENTITY_WIDTH;
     private final float playerHeight = ENTITY_HEIGHT;
 
-
     private enum Direction { DOWN, LEFT, RIGHT, UP }
     private Direction currentDirection; // 0: down, 1: left, 2: right, 3: up
+    
     boolean isAttacking = false;
     float attackTime = 0f;
 
     private final float PLAYER_SPEED = 5.0f;
     private final float PLAYER_ANIMATION_SPEED = 1.5f; // lower is faster
-
     
-
-    public Player(World world, int x , int y) {
+    public Player(World world, String id, int x , int y) {
         pos = new Vector2(x, y);
         vel = new Vector2(0, 0);
+        this.id = id;
+        health = 20;
+
         createBody(world, x, y);
         currentDirection = Direction.DOWN;
-        stateTime = 0f;
         setupAnimations();        
     }
 
@@ -52,10 +52,12 @@ public class Player extends Entity {
         idleTextures = new Texture[dirCount];
         runTextures = new Texture[dirCount];
         attackTextures = new Texture[dirCount];
+        hitTextures = new Texture[dirCount];
 
         idleAnimations = new Animation[dirCount];
         runAnimations = new Animation[dirCount];
         attackAnimations = new Animation[dirCount];
+        hitAnimations = new Animation[dirCount];
 
         String[] dirNames = new String[] {"down", "left", "right", "up"};
         for (int i = 0; i < dirCount; i++) {
@@ -67,6 +69,9 @@ public class Player extends Entity {
 
             attackTextures[i] = new Texture(Gdx.files.internal("Char_Sprites/char_attack_" + dirNames[i] + "_anim_strip_6.png"));
             attackAnimations[i] = makeAnimation(attackTextures[i], 6, 1, PLAYER_ANIMATION_SPEED / 1.5f);
+
+            hitTextures[i] = new Texture(Gdx.files.internal("Char_Sprites/char_hit_" + dirNames[i] + "_anim_strip_3.png"));
+            hitAnimations[i] = makeAnimation(hitTextures[i], 3, 1, PLAYER_ANIMATION_SPEED / 2f);
         }
 
         currentFrame = idleAnimations[currentDirection.ordinal()].getKeyFrame(0);
@@ -195,6 +200,8 @@ public class Player extends Entity {
         disposeTextures(idleTextures);
         disposeTextures(runTextures);
         disposeTextures(attackTextures);
+        disposeTextures(hitTextures);
+
         if (body != null && body.getWorld() != null) {
             body.getWorld().destroyBody(body);
             body = null;
@@ -203,22 +210,37 @@ public class Player extends Entity {
 
     private void createBody(World world, int x, int y) {
         BodyDef bodyDef = new BodyDef();
+        bodyDef.fixedRotation = true;
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-        // Body positioned at center of sprite
         bodyDef.position.set(x + ENTITY_WIDTH / 2f, y + ENTITY_HEIGHT / 2f);
-        body = world.createBody(bodyDef);
-        body.setFixedRotation(true);
-        body.setLinearDamping(0.25f);
 
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(ENTITY_WIDTH / 2.8f, ENTITY_HEIGHT / 4f);
 
         FixtureDef fixture = new FixtureDef();
         fixture.shape = shape;
-        fixture.density = 1f;
+        fixture.density = 1.0f;
         fixture.friction = 0.2f;
         fixture.restitution = 0f;
-        body.createFixture(fixture);
+
+        this.body = world.createBody(bodyDef);
+        this.body.setLinearDamping(0.25f);
+        
+        this.body.createFixture(fixture).setUserData(this);
+
         shape.dispose();
+    }
+
+    public void takeDamage(int damage) {
+        health -= damage;
+        damageTimer = 0f; // reset damage timer to start hit animation from beginning
+
+        if (health > 0) {
+            Gdx.app.log("Player", "Player took " + damage + " damage. Health: " + health);
+        }
+
+        if (health <= 0) {
+            Gdx.app.log("Player", "Player died!");
+        }
     }
 }

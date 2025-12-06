@@ -11,6 +11,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 
+import io.github.solis067.legend.handlers.MyContectListener;
+import io.github.solis067.legend.ui.GameUI;
+
 /** First screen of the application. Displayed after the application is created. */
 public class GameScreen implements Screen {
     final Main game;
@@ -24,6 +27,9 @@ public class GameScreen implements Screen {
     World world;
     Box2DDebugRenderer debugRenderer;
 
+    MyContectListener contactListener;
+    GameUI gameUI;
+
     public GameScreen(Main game) {
         // Initialize your screen here. Store a reference to the "game" instance if needed.
         this.game = game;
@@ -32,10 +38,15 @@ public class GameScreen implements Screen {
         world = new World(new Vector2(0f, 0f), true);
         debugRenderer = new Box2DDebugRenderer();
 
-        player = new Player(world, 0, 0);
-        slime = new Slime(world, 5, 5);
+        contactListener = new MyContectListener();
+        world.setContactListener(contactListener);
+
+        player = new Player(world, "PLAYER", 0, 0);
+        slime = new Slime(world, "SLIME", 5, 5);
         
         gameMap = new GameMap("Tiled/grassland.tmx", world);
+
+        gameUI = new GameUI(player, slime);
 
         camera = (OrthographicCamera) game.viewport.getCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -63,6 +74,8 @@ public class GameScreen implements Screen {
         world.step(delta, 6, 2);
         slime.update(delta);
         player.update(delta);
+        contactListener.update(delta);
+        gameUI.update(delta);
     }
 
     private void draw() {
@@ -89,11 +102,15 @@ public class GameScreen implements Screen {
         player.draw(game);
 
         game.batch.end();
+
+        // Render UI
+        gameUI.render();
     }
 
     @Override
     public void resize(int width, int height) {
         game.viewport.update(width, height, true);
+        gameUI.resize(width, height);
     }
 
     @Override
@@ -115,6 +132,7 @@ public class GameScreen implements Screen {
     public void dispose() {
         player.dispose();
         gameMap.dispose();
+        gameUI.dispose();
         world.dispose();
     }
 }

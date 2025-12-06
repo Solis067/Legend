@@ -9,26 +9,42 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.Fixture;
 
 public class Slime extends Entity {
 
+    // Textures and animations
     Texture idleTexture;
+    Texture hitTexture;
     Animation<TextureRegion> idleAnimation;
+    Animation<TextureRegion> hitAnimation;
+
+    // Variables
 
     final float ANIMATION_SPEED = 1.5f;
 
-    
-    public Slime(World world, int x , int y) {
+    boolean isTakingDamage = false;
+    float damageTimer = 0f;
+
+    Fixture slimeFixture;
+
+    public Slime(World world, String id, int x , int y) {
         pos = new Vector2(x, y);
         vel = new Vector2(0, 0);
+        this.id = id;
+
+        health = 10;
+
         createBody(world, x, y);
         setupAnimations();
     }
 
     private void setupAnimations() {
         idleTexture = new Texture(Gdx.files.internal("Enemies_Sprites/Pinkslime_Sprites/pinkslime_idle_anim_all_dir_strip_6.png"));
+        hitTexture = new Texture(Gdx.files.internal("Enemies_Sprites/Pinkslime_Sprites/pinkslime_hit_anim_all_dir_strip_4.png"));
 
         idleAnimation = makeAnimation(idleTexture, 6, 1, ANIMATION_SPEED);
+        hitAnimation = makeAnimation(hitTexture, 4, 1, ANIMATION_SPEED / 1.5f);
 
         currentFrame = idleAnimation.getKeyFrame(0);
     }
@@ -36,9 +52,24 @@ public class Slime extends Entity {
     public void update(float delta) {
         stateTime += delta;
 
+        if (isTakingDamage) {
+            damageTimer += delta;
+            currentFrame = hitAnimation.getKeyFrame(damageTimer, false);
+            // When the hit animation finishes, stop taking damage and reset timers so normal animations resume cleanly
+            if (hitAnimation.isAnimationFinished(damageTimer)) {
+                isTakingDamage = false;
+                damageTimer = 0f;
+                stateTime = 0f;
+            }
+        }
+
         body.setLinearVelocity(vel.x, vel.y);
         pos.x = body.getPosition().x - ENTITY_WIDTH / 2f;
         pos.y = body.getPosition().y - (ENTITY_HEIGHT / 2f) + 0.15f;
+
+        if (isTakingDamage) {
+            return; // skip normal animation updates while taking damage
+        }
 
         currentFrame = idleAnimation.getKeyFrame(stateTime, true);
     }
@@ -50,26 +81,28 @@ public class Slime extends Entity {
 
     private void createBody(World world, int x, int y) {
         BodyDef bodyDef = new BodyDef();
+        bodyDef.fixedRotation = true;
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-        // Body positioned at center of sprite
         bodyDef.position.set(x + ENTITY_WIDTH / 2f, y + ENTITY_HEIGHT / 2f);
-        body = world.createBody(bodyDef);
-        body.setFixedRotation(true);
-        body.setLinearDamping(0.25f);
 
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(ENTITY_WIDTH / 2.8f, ENTITY_HEIGHT / 4f);
 
+
         FixtureDef fixture = new FixtureDef();
         fixture.shape = shape;
-        fixture.density = 1f;
-        fixture.friction = 0.2f;
-        fixture.restitution = 0f;
-        body.createFixture(fixture);
+        fixture.density = 1.0f;
+        fixture.restitution = 20.0f;
+
+        this.body = world.createBody(bodyDef);
+        this.body.setLinearDamping(0.25f);
+        this.body.createFixture(fixture).setUserData(this);
+
         shape.dispose();
     }
 
     public void dispose() {
         idleTexture.dispose();
+        hitTexture.dispose();
     }
 }
