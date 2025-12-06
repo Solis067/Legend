@@ -10,6 +10,10 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.audio.Music;
+
+import io.github.solis067.legend.handlers.MyContectListener;
+import io.github.solis067.legend.ui.GameUI;
 
 /** First screen of the application. Displayed after the application is created. */
 public class GameScreen implements Screen {
@@ -20,9 +24,14 @@ public class GameScreen implements Screen {
     Slime slime;
     GameMap gameMap;
     OrthographicCamera camera;
+    Music overworldTheme;
 
     World world;
     Box2DDebugRenderer debugRenderer;
+
+    MyContectListener contactListener;
+    GameUI gameUI;
+    private boolean gameOverTriggered = false;
 
     public GameScreen(Main game) {
         // Initialize your screen here. Store a reference to the "game" instance if needed.
@@ -32,10 +41,16 @@ public class GameScreen implements Screen {
         world = new World(new Vector2(0f, 0f), true);
         debugRenderer = new Box2DDebugRenderer();
 
-        player = new Player(world, 0, 0);
-        slime = new Slime(world, 5, 5);
+        contactListener = new MyContectListener();
+        world.setContactListener(contactListener);
+
+        player = new Player(world, "PLAYER", 40, 20);
+        slime = new Slime(world, "SLIME", 40, 25);
         
-        gameMap = new GameMap("Tiled/grassland.tmx", world);
+        gameMap = new GameMap("Tiled/overworld1.tmx", world);
+        overworldTheme = Gdx.audio.newMusic(Gdx.files.internal("Audio/Music/nes_07-jazz.wav"));
+
+        gameUI = new GameUI(player, slime);
 
         camera = (OrthographicCamera) game.viewport.getCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -45,6 +60,9 @@ public class GameScreen implements Screen {
     @Override
     public void show() {
         // Prepare your screen here.
+        overworldTheme.setLooping(true);
+        overworldTheme.setVolume(0.4f);
+        overworldTheme.play();
     }
 
     @Override
@@ -52,6 +70,9 @@ public class GameScreen implements Screen {
         // Draw your screen here. "delta" is the time since last render in seconds.
         input();
         logic(delta);
+        if (checkGameOver()) {
+            return;
+        }
         draw();
     }
 
@@ -63,6 +84,23 @@ public class GameScreen implements Screen {
         world.step(delta, 6, 2);
         slime.update(delta);
         player.update(delta);
+        contactListener.update(delta);
+        gameUI.update(delta);
+    }
+
+    private boolean checkGameOver() {
+        if (gameOverTriggered) {
+            return true;
+        }
+
+        if (player.isDead()) {
+            gameOverTriggered = true;
+            game.setScreen(new GameOverScreen(game));
+            dispose();
+            return true;
+        }
+
+        return false;
     }
 
     private void draw() {
@@ -80,20 +118,49 @@ public class GameScreen implements Screen {
         gameMap.render(camera);
         debugRenderer.render(world, camera.combined);
 
-        // Sprites
+        // Sprites - draw entities in Y-order (higher Y = further back = drawn first)
+
+
         game.batch.setProjectionMatrix(camera.combined);
+
+
         game.batch.begin();
 
-        
-        slime.draw(game);
-        player.draw(game);
+
+
+        // Draw entities based on Y position
+
+
+        if (player.pos.y > slime.pos.y) {
+
+
+            player.draw(game);
+
+
+            slime.draw(game);
+
+
+        } else {
+
+
+            slime.draw(game);
+
+
+            player.draw(game);
+
+
+        }
 
         game.batch.end();
+
+        // Render UI
+        gameUI.render();
     }
 
     @Override
     public void resize(int width, int height) {
         game.viewport.update(width, height, true);
+        gameUI.resize(width, height);
     }
 
     @Override
@@ -109,12 +176,16 @@ public class GameScreen implements Screen {
     @Override
     public void hide() {
         // This method is called when another screen replaces this one.
+        overworldTheme.stop();
     }
 
     @Override
     public void dispose() {
         player.dispose();
         gameMap.dispose();
+        gameUI.dispose();
         world.dispose();
+        debugRenderer.dispose();
+        overworldTheme.dispose();
     }
 }

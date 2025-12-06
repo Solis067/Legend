@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "grassland.tmx",
+    "activeFile": "overworld1.tmx",
     "expandedProjectPaths": [
         "Rules",
         "."
@@ -33,11 +33,11 @@
             "expandedObjectLayers": [
                 7
             ],
-            "scale": 4,
-            "selectedLayer": 5,
+            "scale": 11,
+            "selectedLayer": 6,
             "viewCenter": {
-                "x": 126.125,
-                "y": 401.375
+                "x": 43.68181818181818,
+                "y": 562.0454545454545
             }
         },
         "Rules/Overworld_Tileset.tsx": {
@@ -55,19 +55,19 @@
             "expandedObjectLayers": [
                 6
             ],
-            "scale": 3,
-            "selectedLayer": 4,
+            "scale": 1,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 171.49999999999997,
-                "y": 99.16666666666669
+                "x": 342.5,
+                "y": 187.5
             }
         },
         "overworld1.tmx": {
             "scale": 1.5,
-            "selectedLayer": 3,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 329.66666666666663,
-                "y": 798.3333333333333
+                "x": 525,
+                "y": 473.66666666666663
             }
         },
         "water_tile_anim.tsx": {
@@ -88,18 +88,15 @@
     "map.tileWidth": 16,
     "map.width": 128,
     "openFiles": [
-        "grassland.tmx",
-        "Rules/OverworldTile_Rules.tmx",
-        "Prototype_Tileset.tsx",
         "overworld1.tmx"
     ],
     "project": "LegendTiled.tiled-project",
     "property.type": "bool",
     "recentFiles": [
-        "Prototype_Tileset.tsx",
         "overworld1.tmx",
-        "Rules/OverworldTile_Rules.tmx",
         "grassland.tmx",
+        "Rules/OverworldTile_Rules.tmx",
+        "Prototype_Tileset.tsx",
         "Overworld_Tileset.tsx",
         "Dungeon_Tileset.tsx",
         "edge_water_tile_anim_strip_8.tsx",

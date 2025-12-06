@@ -7,12 +7,17 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 
 public class Entity {
-    Vector2 pos;
-    Vector2 vel;
-    TextureRegion currentFrame;
-    Body body;
+    protected Vector2 pos;
+    protected Vector2 vel;
+    protected TextureRegion currentFrame;
 
-    float stateTime;
+    public Body body;
+    public String id;
+
+    protected int health;
+
+    protected float stateTime = 0f;
+    protected float damageTimer = 0f;
 
     final float ENTITY_WIDTH = Main.TILE_PIXELS * Main.UNIT_SCALE;
     final float ENTITY_HEIGHT = Main.TILE_PIXELS * Main.UNIT_SCALE;
@@ -38,5 +43,13 @@ public class Entity {
                 if (t != null) t.dispose();
             }
         }
+    }
+
+    public int getHealth() {
+        return health;
+    }
+
+    public void setHealth(int health) {
+        this.health = health;
     }
 }
