@@ -31,7 +31,6 @@ public class GameMap {
         mapLoader = new TmxMapLoader();
         tiledMap = mapLoader.load(mapFilePath);
 
-        // Use unit scale so map pixels convert to world units (1 world unit = TILE_PIXELS pixels)
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap, Main.UNIT_SCALE);
     }
 
@@ -41,13 +40,11 @@ public class GameMap {
 
         if (world == null) return;
 
-        // Create static bodies for colli
         String[] layerNames = new String[] {"collisions"};
         for (String layerName : layerNames) {
             MapLayer layer = tiledMap.getLayers().get(layerName);
             if (layer == null) continue;
 
-            // Object rectangles
             for (MapObject obj : layer.getObjects()) {
                 if (obj instanceof RectangleMapObject) {
                     Rectangle rect = ((RectangleMapObject) obj).getRectangle();
@@ -102,5 +99,4 @@ public class GameMap {
             createdBodies.clear();
         }
     }
-
 }

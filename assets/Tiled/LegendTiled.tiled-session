@@ -33,11 +33,11 @@
             "expandedObjectLayers": [
                 7
             ],
-            "scale": 4,
-            "selectedLayer": 5,
+            "scale": 3,
+            "selectedLayer": 6,
             "viewCenter": {
-                "x": 126.125,
-                "y": 401.375
+                "x": 331.16666666666663,
+                "y": 175.16666666666669
             }
         },
         "Rules/Overworld_Tileset.tsx": {
@@ -55,19 +55,19 @@
             "expandedObjectLayers": [
                 6
             ],
-            "scale": 3,
-            "selectedLayer": 4,
+            "scale": 1,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 171.49999999999997,
-                "y": 99.16666666666669
+                "x": 168.5,
+                "y": 184.5
             }
         },
         "overworld1.tmx": {
-            "scale": 1.5,
-            "selectedLayer": 3,
+            "scale": 1,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 329.66666666666663,
-                "y": 798.3333333333333
+                "x": 470.5,
+                "y": 521.5
             }
         },
         "water_tile_anim.tsx": {
@@ -96,8 +96,8 @@
     "project": "LegendTiled.tiled-project",
     "property.type": "bool",
     "recentFiles": [
-        "Prototype_Tileset.tsx",
         "overworld1.tmx",
+        "Prototype_Tileset.tsx",
         "Rules/OverworldTile_Rules.tmx",
         "grassland.tmx",
         "Overworld_Tileset.tsx",
