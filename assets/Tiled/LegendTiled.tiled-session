@@ -5,8 +5,8 @@
     },
     "activeFile": "overworld1.tmx",
     "expandedProjectPaths": [
-        "Rules",
-        "."
+        ".",
+        "Rules"
     ],
     "fileStates": {
         "Dungeon_Tileset.tsx": {
@@ -63,11 +63,11 @@
             }
         },
         "overworld1.tmx": {
-            "scale": 1.5,
+            "scale": 2,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 525,
-                "y": 473.66666666666663
+                "x": 551.75,
+                "y": 535.25
             }
         },
         "water_tile_anim.tsx": {

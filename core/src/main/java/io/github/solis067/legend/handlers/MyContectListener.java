@@ -1,6 +1,5 @@
 package io.github.solis067.legend.handlers;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
@@ -36,7 +35,6 @@ public class MyContectListener implements ContactListener {
                 );
                 player.takeDamage(2, knockbackDir);
                 playerHitCooldown = PLAYER_HIT_COOLDOWN;
-                Gdx.app.log("Contact", "Player took damage from slime");
             }
         }
 
@@ -44,8 +42,6 @@ public class MyContectListener implements ContactListener {
         if (swordHitboxTouchesSlime(fA, fB)) {
             Player player = extractPlayerFromHitbox(fA, fB);
             Slime slime = extractSlime(fA, fB);
-            Gdx.app.log("Contact", "Player: " + player + ", Slime: " + slime);
-            Gdx.app.log("Contact", "Sword hitbox touched slime");
             if (player != null && slime != null) {
                 player.setSlimeinRange(true, slime);
             }
@@ -70,7 +66,6 @@ public class MyContectListener implements ContactListener {
         if (swordHitboxTouchesSlime(fA, fB)) {
             Player player = extractPlayerFromHitbox(fA, fB);
             Slime slime = extractSlime(fA, fB);
-            Gdx.app.log("Contact", "Sword hitbox no longer touching slime");
             if (player != null && slime != null) {
                 player.setSlimeinRange(false, null);
             }

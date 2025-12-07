@@ -12,7 +12,7 @@ public class Sword {
     
     // Hitbox dimensions
     private final float ENTITY_WIDTH = Main.TILE_PIXELS * Main.UNIT_SCALE;
-    private final float HITBOX_WIDTH = ENTITY_WIDTH * 0.7f;
+    private final float HITBOX_WIDTH = ENTITY_WIDTH * 1.2f;
     private final float HITBOX_HEIGHT = ENTITY_WIDTH * 0.7f;
     private final float HITBOX_DISTANCE = ENTITY_WIDTH * 0.7f;
     
@@ -32,7 +32,8 @@ public class Sword {
         
         PolygonShape hitboxShape = new PolygonShape();
         Vector2 offset = hitboxOffsetForDirection(currentDirection);
-        hitboxShape.setAsBox(HITBOX_WIDTH / 2f, HITBOX_HEIGHT / 2f, offset, 0f);
+        float rotation = getRotationForDirection(currentDirection);
+        hitboxShape.setAsBox(HITBOX_WIDTH / 2f, HITBOX_HEIGHT / 2f, offset, rotation);
         
         FixtureDef hitboxDef = new FixtureDef();
         hitboxDef.shape = hitboxShape;
@@ -61,6 +62,16 @@ public class Sword {
         }
     }
     
+    private float getRotationForDirection(Direction direction) {
+        switch (direction) {
+            case DOWN: return 0f;
+            case UP: return (float) Math.PI;
+            case LEFT: return (float) Math.PI / 2f;
+            case RIGHT: return -(float) Math.PI / 2f;
+            default: return 0f;
+        }
+    }
+    
     public void setDirection(int directionOrdinal) {
         Direction[] dirs = Direction.values();
         if (directionOrdinal >= 0 && directionOrdinal < dirs.length) {
@@ -85,5 +96,9 @@ public class Sword {
 
     public Player getPlayer() {
         return player;
+    }
+
+    public void dispose() {
+        destroyHitboxSensor();
     }
 }

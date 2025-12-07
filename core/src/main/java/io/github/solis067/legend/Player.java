@@ -58,7 +58,7 @@ public class Player extends Entity {
         pos = new Vector2(x, y);
         vel = new Vector2(0, 0);
         this.id = id;
-        health = 20;
+        health = 10;
 
         attackSound = Gdx.audio.newSound(Gdx.files.internal("Audio/Sounds/attack.mp3"));
         hitSound = Gdx.audio.newSound(Gdx.files.internal("Audio/Sounds/hit.mp3"));
@@ -276,7 +276,7 @@ public class Player extends Entity {
         float offsetX = 0f;
         float offsetY = 0f;
 
-        if (isAttacking) {
+        if (isAttacking && !isTakingDamage) {
             drawHeight *= 2f;
             drawWidth *= 2f;
             switch (currentDirection) {
@@ -363,6 +363,10 @@ public class Player extends Entity {
         if (attackSound != null) attackSound.dispose();
         if (hitSound != null) hitSound.dispose();
         if (grassRunSound != null) grassRunSound.dispose();
+        if (sword != null) {
+            sword.dispose();
+            sword = null;
+        }
 
         if (body != null && body.getWorld() != null) {
             body.getWorld().destroyBody(body);
