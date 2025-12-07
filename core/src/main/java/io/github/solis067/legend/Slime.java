@@ -16,27 +16,38 @@ public class Slime extends Entity {
     // Textures and animations
     Texture idleTexture;
     Texture hitTexture;
+    Texture runTexture;
+    Texture deathTexture;
     Animation<TextureRegion> idleAnimation;
     Animation<TextureRegion> hitAnimation;
+    Animation<TextureRegion> runAnimation;
+    Animation<TextureRegion> deathAnimation;
 
-    // Variables
-
-    final float ANIMATION_SPEED = 1.5f;
-
-    boolean isTakingDamage = false;
-    float damageTimer = 0f;
-    boolean isKnockedBack = false;
-    float knockbackTimer = 0f;
-    float KNOCKBACK_DURATION = 0.2f;
+    TextureRegion currentFrame;
 
     Fixture slimeFixture;
 
-    public Slime(World world, String id, int x , int y) {
+    // Variables
+    boolean isTakingDamage = false;
+    boolean isKnockedBack = false;
+    boolean isDying = false;
+    boolean isDead = false;
+    float damageTimer = 0f;
+    float knockbackTimer = 0f;
+    float KNOCKBACK_DURATION = 0.2f;
+
+    final float ANIMATION_SPEED = 1.5f;
+    final float MOVEMENT_SPEED = 3f;
+    
+    private Player player;
+
+    public Slime(World world, String id, int x , int y, Player player) {
         pos = new Vector2(x, y);
         vel = new Vector2(0, 0);
         this.id = id;
+        this.player = player;
 
-        health = 20;
+        health = 50;
 
         createBody(world, x, y);
         setupAnimations();
@@ -45,9 +56,13 @@ public class Slime extends Entity {
     private void setupAnimations() {
         idleTexture = new Texture(Gdx.files.internal("Enemies_Sprites/Pinkslime_Sprites/pinkslime_idle_anim_all_dir_strip_6.png"));
         hitTexture = new Texture(Gdx.files.internal("Enemies_Sprites/Pinkslime_Sprites/pinkslime_hit_anim_all_dir_strip_4.png"));
+        runTexture = new Texture(Gdx.files.internal("Enemies_Sprites/Pinkslime_Sprites/pinkslime_run_anim_all_dir_strip_6.png"));
+        deathTexture = new Texture(Gdx.files.internal("Enemies_Sprites/Pinkslime_Sprites/pinkslime_death_anim_all_dir_strip_8.png"));
 
         idleAnimation = makeAnimation(idleTexture, 6, 1, ANIMATION_SPEED);
         hitAnimation = makeAnimation(hitTexture, 4, 1, ANIMATION_SPEED / 1.5f);
+        runAnimation = makeAnimation(runTexture, 6, 1, ANIMATION_SPEED);
+        deathAnimation = makeAnimation(deathTexture, 8, 1, ANIMATION_SPEED / 2f);
 
         currentFrame = idleAnimation.getKeyFrame(0);
     }
@@ -75,7 +90,26 @@ public class Slime extends Entity {
     }
 
     public void update(float delta) {
+        if (isDead) return; // Don't update if already dead
+
         stateTime += delta;
+
+        // Handle death animation
+        if (isDying) {
+            damageTimer += delta;
+            currentFrame = deathAnimation.getKeyFrame(damageTimer, false);
+            
+            // When death animation finishes, mark as dead
+            if (deathAnimation.isAnimationFinished(damageTimer)) {
+                isDead = true;
+                // Destroy physics body
+                if (body != null && body.getWorld() != null) {
+                    body.getWorld().destroyBody(body);
+                    body = null;
+                }
+            }
+            return;
+        }
 
         if (isTakingDamage) {
             damageTimer += delta;
@@ -97,8 +131,19 @@ public class Slime extends Entity {
             }
         }
 
-        // Only set velocity if not being knocked back
-        if (!isKnockedBack) {
+        // Only set velocity if not being knocked back and not dying
+        if (!isKnockedBack && !isDying) {
+            // Move towards player
+            if (player != null && player.body != null) {
+                Vector2 playerPos = player.body.getPosition();
+                Vector2 slimePos = body.getPosition();
+                
+                // Calculate direction to player
+                Vector2 direction = playerPos.cpy().sub(slimePos).nor();
+                
+                // Set velocity towards player
+                vel = direction.scl(MOVEMENT_SPEED);
+            }
             body.setLinearVelocity(vel.x, vel.y);
         }
         pos.x = body.getPosition().x - ENTITY_WIDTH / 2f;
@@ -108,18 +153,39 @@ public class Slime extends Entity {
             return; // skip normal animation updates while taking damage
         }
 
-        currentFrame = idleAnimation.getKeyFrame(stateTime, true);
+        // Use run animation when moving, idle when stationary
+        if (vel.len() > 0.1f) {
+            currentFrame = runAnimation.getKeyFrame(stateTime, true);
+        } else {
+            currentFrame = idleAnimation.getKeyFrame(stateTime, true);
+        }
     }
 
     public void draw(Main game) {
+        // Don't draw if dead
+        if (isDead) return;
+        
         // Drawing logic goes here
         game.batch.draw(currentFrame, pos.x, pos.y, ENTITY_WIDTH, ENTITY_HEIGHT);
     }
 
     public void takeDamage(int damage, Vector2 knockbackDirection) {
+        if (isDead || isDying) return;
+
+        health = Math.max(health - damage, 0);
+
+        if (health == 0) {
+            // Start death animation
+            isDying = true;
+            damageTimer = 0f;
+            stateTime = 0f;
+            isTakingDamage = false;
+            Gdx.app.log("Slime", "Slime " + id + " has died.");
+            return; // Don't play hit animation or knockback when dying
+        }
+
         damageTimer = 0f;
         isTakingDamage = true;
-        health = Math.max(health - damage, 0);
         
         // Apply smooth knockback
         if (knockbackDirection != null && body != null) {
@@ -139,5 +205,11 @@ public class Slime extends Entity {
     public void dispose() {
         idleTexture.dispose();
         hitTexture.dispose();
+        runTexture.dispose();
+        deathTexture.dispose();
+    }
+
+    public boolean isDead() {
+        return isDead;
     }
 }

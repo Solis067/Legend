@@ -45,7 +45,7 @@ public class GameScreen implements Screen {
         world.setContactListener(contactListener);
 
         player = new Player(world, "PLAYER", 40, 20);
-        slime = new Slime(world, "SLIME", 40, 25);
+        slime = new Slime(world, "SLIME", 40, 25, player);
         
         gameMap = new GameMap("Tiled/overworld1.tmx", world);
         overworldTheme = Gdx.audio.newMusic(Gdx.files.internal("Audio/Music/nes_07-jazz.wav"));
