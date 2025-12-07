@@ -25,6 +25,9 @@ public class Slime extends Entity {
 
     boolean isTakingDamage = false;
     float damageTimer = 0f;
+    boolean isKnockedBack = false;
+    float knockbackTimer = 0f;
+    float KNOCKBACK_DURATION = 0.2f;
 
     Fixture slimeFixture;
 
@@ -33,7 +36,7 @@ public class Slime extends Entity {
         vel = new Vector2(0, 0);
         this.id = id;
 
-        health = 10;
+        health = 20;
 
         createBody(world, x, y);
         setupAnimations();
@@ -62,10 +65,10 @@ public class Slime extends Entity {
         FixtureDef fixture = new FixtureDef();
         fixture.shape = shape;
         fixture.density = 1.0f;
-        fixture.restitution = 15.0f;
+        fixture.restitution = 0.0f; // No bounce for smoother knockback
 
         this.body = world.createBody(bodyDef);
-        this.body.setLinearDamping(0.25f);
+        this.body.setLinearDamping(5.0f); // Higher damping for smoother deceleration
         this.body.createFixture(fixture).setUserData(this);
 
         shape.dispose();
@@ -84,8 +87,20 @@ public class Slime extends Entity {
                 stateTime = 0f;
             }
         }
+        
+        // Update knockback state
+        if (isKnockedBack) {
+            knockbackTimer += delta;
+            if (knockbackTimer >= KNOCKBACK_DURATION) {
+                isKnockedBack = false;
+                knockbackTimer = 0f;
+            }
+        }
 
-        body.setLinearVelocity(vel.x, vel.y);
+        // Only set velocity if not being knocked back
+        if (!isKnockedBack) {
+            body.setLinearVelocity(vel.x, vel.y);
+        }
         pos.x = body.getPosition().x - ENTITY_WIDTH / 2f;
         pos.y = body.getPosition().y - (ENTITY_HEIGHT / 2f) + 0.15f;
 
@@ -99,6 +114,26 @@ public class Slime extends Entity {
     public void draw(Main game) {
         // Drawing logic goes here
         game.batch.draw(currentFrame, pos.x, pos.y, ENTITY_WIDTH, ENTITY_HEIGHT);
+    }
+
+    public void takeDamage(int damage, Vector2 knockbackDirection) {
+        damageTimer = 0f;
+        isTakingDamage = true;
+        health = Math.max(health - damage, 0);
+        
+        // Apply smooth knockback
+        if (knockbackDirection != null && body != null) {
+            isKnockedBack = true;
+            knockbackTimer = 0f;
+            float knockbackSpeed = 8f; // Smooth velocity-based knockback
+            Vector2 knockback = knockbackDirection.cpy().nor().scl(knockbackSpeed);
+            body.setLinearVelocity(knockback);
+        }
+    }
+    
+    // Overload for backward compatibility (if needed elsewhere)
+    public void takeDamage(int damage) {
+        takeDamage(damage, null);
     }
 
     public void dispose() {

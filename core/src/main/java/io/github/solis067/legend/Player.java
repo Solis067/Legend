@@ -26,6 +26,10 @@ public class Player extends Entity {
     Sound attackSound;
     Sound hitSound;
     Sound grassRunSound;
+
+    Slime slimeInRange = null;
+    boolean slimeIsInRange = false;
+
     private float runStepTimer = 0f;
 
     private final float playerWidth = ENTITY_WIDTH;
@@ -39,11 +43,17 @@ public class Player extends Entity {
     float attackTime = 0f;
     float damageTimer = 0f;
     private boolean dead = false;
+    boolean isKnockedBack = false;
+    float knockbackTimer = 0f;
+    float KNOCKBACK_DURATION = 0.2f;
 
     private final float PLAYER_SPEED = 5.0f;
     private final float PLAYER_ANIMATION_SPEED = 1.5f; // lower is faster
     private static final float RUN_STEP_INTERVAL = 0.4f; // seconds between footstep sounds
-    
+
+    // Sword with hitbox sensor
+    private Sword sword;
+
     public Player(World world, String id, int x , int y) {
         pos = new Vector2(x, y);
         vel = new Vector2(0, 0);
@@ -56,9 +66,9 @@ public class Player extends Entity {
 
         createBody(world, x, y);
         currentDirection = Direction.DOWN;
-        setupAnimations();        
+        setupAnimations();
+        sword = new Sword(this, body);
     }
-
     @SuppressWarnings("unchecked")
     private void setupAnimations() {
         // Setup the animations for each direction
@@ -107,7 +117,7 @@ public class Player extends Entity {
         fixture.restitution = 0f;
 
         this.body = world.createBody(bodyDef);
-        this.body.setLinearDamping(0.25f);
+        this.body.setLinearDamping(5.0f); // Higher damping for smoother knockback deceleration
         
         this.body.createFixture(fixture).setUserData(this);
 
@@ -123,11 +133,26 @@ public class Player extends Entity {
             attackTime = 0f;
             vel.x = 0;
             vel.y = 0;
+
+            if (slimeIsInRange) {
+                Gdx.app.log("Attack", "Attacking slime in range");
+                if (slimeInRange != null) {
+                    // Calculate knockback direction from player to slime
+                    Vector2 knockbackDir = new Vector2(
+                        slimeInRange.body.getPosition().x - body.getPosition().x,
+                        slimeInRange.body.getPosition().y - body.getPosition().y
+                    );
+                    slimeInRange.takeDamage(5, knockbackDir);
+                }
+                else {
+                    Gdx.app.log("Attack", "No slime in range to attack");
+                }
+            }
             if (attackSound != null) attackSound.play();
             return;
         }
 
-        if (isAttacking) {
+        if (isAttacking || isTakingDamage) {
             return;
         }
 
@@ -180,8 +205,20 @@ public class Player extends Entity {
                 stateTime = 0f;
             }
         }
+        
+        // Update knockback state
+        if (isKnockedBack) {
+            knockbackTimer += delta;
+            if (knockbackTimer >= KNOCKBACK_DURATION) {
+                isKnockedBack = false;
+                knockbackTimer = 0f;
+            }
+        }
 
-        body.setLinearVelocity(vel.x, vel.y);
+        // Only set velocity if not being knocked back
+        if (!isKnockedBack) {
+            body.setLinearVelocity(vel.x, vel.y);
+        }
         pos.x = body.getPosition().x - playerWidth / 2f;
         pos.y = body.getPosition().y - (playerHeight / 2f) + 0.25f; // slight offset for better ground alignment
 
@@ -207,6 +244,12 @@ public class Player extends Entity {
         }
         else {
             currentFrame = idleAnimations[currentDirection.ordinal()].getKeyFrame(stateTime, true);
+        }
+
+        // Update sword hitbox position based on facing direction
+        if (sword != null) {
+            sword.setDirection(currentDirection.ordinal());
+            sword.update();
         }
 
         handleRunSound(delta);
@@ -261,7 +304,7 @@ public class Player extends Entity {
         game.batch.draw(currentFrame, pos.x + offsetX, pos.y + offsetY, drawWidth, drawHeight);
     }
 
-    public void takeDamage(int damage) {
+    public void takeDamage(int damage, Vector2 knockbackDirection) {
         if (dead) {
             return;
         }
@@ -275,10 +318,28 @@ public class Player extends Entity {
             dead = true;
             vel.setZero();
         }
+        
+        // Apply smooth knockback
+        if (knockbackDirection != null && body != null && !dead) {
+            isKnockedBack = true;
+            knockbackTimer = 0f;
+            float knockbackSpeed = 8f; // Smooth velocity-based knockback
+            Vector2 knockback = knockbackDirection.cpy().nor().scl(knockbackSpeed);
+            body.setLinearVelocity(knockback);
+        }
+    }
+    
+    // Overload for backward compatibility
+    public void takeDamage(int damage) {
+        takeDamage(damage, null);
     }
 
     public boolean isDead() {
         return dead;
+    }
+
+    public boolean isAttacking() {
+        return isAttacking;
     }
 
     public float getWidth() {
@@ -287,6 +348,11 @@ public class Player extends Entity {
 
     public float getHeight() {
         return playerHeight;
+    }
+
+    public void setSlimeinRange(boolean inRange, Slime slime) {
+        slimeInRange = slime;
+        slimeIsInRange = inRange;
     }
 
     public void dispose() {
