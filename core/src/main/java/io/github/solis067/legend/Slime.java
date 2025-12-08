@@ -23,11 +23,10 @@ public class Slime extends Entity {
     Animation<TextureRegion> runAnimation;
     Animation<TextureRegion> deathAnimation;
 
-    TextureRegion currentFrame;
-
     Fixture slimeFixture;
 
-    // Variables
+    private Player player;
+
     boolean isTakingDamage = false;
     boolean isKnockedBack = false;
     boolean isDying = false;
@@ -38,14 +37,22 @@ public class Slime extends Entity {
 
     final float ANIMATION_SPEED = 1.5f;
     final float MOVEMENT_SPEED = 3f;
+    final float STARTUP_DELAY = 5f;
     
-    private Player player;
+    float startupCountdown = STARTUP_DELAY;
+    
+    private int spawnX;
+    private int spawnY;
+    private World world;
 
     public Slime(World world, String id, int x , int y, Player player) {
         pos = new Vector2(x, y);
         vel = new Vector2(0, 0);
         this.id = id;
         this.player = player;
+        this.world = world;
+        this.spawnX = x;
+        this.spawnY = y;
 
         health = 50;
 
@@ -93,6 +100,11 @@ public class Slime extends Entity {
         if (isDead) return; // Don't update if already dead
 
         stateTime += delta;
+        
+        // Decrement startup countdown
+        if (startupCountdown > 0) {
+            startupCountdown -= delta;
+        }
 
         // Handle death animation
         if (isDying) {
@@ -131,8 +143,8 @@ public class Slime extends Entity {
             }
         }
 
-        // Only set velocity if not being knocked back and not dying
-        if (!isKnockedBack && !isDying) {
+        // Only set velocity if not being knocked back and not dying and startup delay is over
+        if (!isKnockedBack && !isDying && startupCountdown <= 0) {
             // Move towards player
             if (player != null && player.body != null) {
                 Vector2 playerPos = player.body.getPosition();
@@ -170,7 +182,7 @@ public class Slime extends Entity {
     }
 
     public void takeDamage(int damage, Vector2 knockbackDirection) {
-        if (isDead || isDying) return;
+        if (isDead || isDying || startupCountdown > 0) return;
 
         health = Math.max(health - damage, 0);
 
@@ -180,7 +192,6 @@ public class Slime extends Entity {
             damageTimer = 0f;
             stateTime = 0f;
             isTakingDamage = false;
-            Gdx.app.log("Slime", "Slime " + id + " has died.");
             return; // Don't play hit animation or knockback when dying
         }
 
@@ -202,14 +213,43 @@ public class Slime extends Entity {
         takeDamage(damage, null);
     }
 
+    public boolean isDead() {
+        return isDead;
+    }
+
+    public boolean isDying() {
+        return isDying;
+    }
+    
+    public float getStartupCountdown() {
+        return startupCountdown;
+    }
+    
+    public void respawn() {
+        // Reset state
+        health = 50;
+        isDead = false;
+        isDying = false;
+        isTakingDamage = false;
+        isKnockedBack = false;
+        damageTimer = 0f;
+        knockbackTimer = 0f;
+        startupCountdown = STARTUP_DELAY;
+        stateTime = 0f;
+        vel = new Vector2(0, 0);
+        
+        // Recreate body at spawn location
+        if (body != null && body.getWorld() != null) {
+            body.getWorld().destroyBody(body);
+        }
+        createBody(world, spawnX, spawnY);
+        pos = new Vector2(spawnX, spawnY);
+    }
+
     public void dispose() {
         idleTexture.dispose();
         hitTexture.dispose();
         runTexture.dispose();
         deathTexture.dispose();
-    }
-
-    public boolean isDead() {
-        return isDead;
     }
 }

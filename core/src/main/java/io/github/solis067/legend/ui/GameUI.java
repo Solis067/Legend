@@ -28,7 +28,7 @@ public class GameUI {
     private Texture redPixelTexture;
     private SpriteBatch batch;
     private static final int PLAYER_MAX_HEALTH = 10;
-    private static final int SLIME_MAX_HEALTH = 20;
+    private static final int SLIME_MAX_HEALTH = 50;
     private float healthBarWidth = 260f;
     private float healthBarHeight = 60f;
     private float playerHealthX;
@@ -118,6 +118,14 @@ public class GameUI {
             float centerY = Gdx.graphics.getHeight() - 30f;
             font.draw(batch, winMessage, centerX, centerY);
             font.getData().setScale(1.5f);
+
+            // Prompt to respawn slime in top-right when dead
+            font.setColor(Color.CYAN);
+            String respawnMsg = "Press ENTER or SPACE to respawn slime";
+            com.badlogic.gdx.graphics.g2d.GlyphLayout respawnLayout = new com.badlogic.gdx.graphics.g2d.GlyphLayout(font, respawnMsg);
+            float respawnX = Gdx.graphics.getWidth() - respawnLayout.width - 10f;
+            float respawnY = Gdx.graphics.getHeight() - 10f;
+            font.draw(batch, respawnMsg, respawnX, respawnY);
         } else {
             // Draw slime health bar at the top (only red bar, no frame)
             drawSlimeHealthBar(slimeHealthX, slimeHealthY, slime.getHealth(), SLIME_MAX_HEALTH);
@@ -126,6 +134,19 @@ public class GameUI {
             font.setColor(Color.GREEN);
             float slimeTextY = slimeHealthY - 5f;
             font.draw(batch, "Slime HP: " + slime.getHealth() + " / " + SLIME_MAX_HEALTH, slimeHealthX, slimeTextY);
+            
+            // Draw startup countdown at top right if greater than 0
+            float countdown = slime.getStartupCountdown();
+            if (countdown > 0) {
+                font.setColor(Color.RED);
+                font.getData().setScale(2f);
+                String countdownText = String.valueOf((int)countdown + 1);
+                com.badlogic.gdx.graphics.g2d.GlyphLayout countdownLayout = new com.badlogic.gdx.graphics.g2d.GlyphLayout(font, countdownText);
+                float countdownX = Gdx.graphics.getWidth() - countdownLayout.width - 10f;
+                float countdownY = Gdx.graphics.getHeight() - 10f;
+                font.draw(batch, countdownText, countdownX, countdownY);
+                font.getData().setScale(1.5f);
+            }
         }
 
         batch.end();
@@ -161,7 +182,7 @@ public class GameUI {
     private void drawSlimeHealthBar(float x, float y, int currentHealth, int maxHealth) {
         // Draw only the red fill bar for slime health (no frame)
         float healthPercentage = (float) currentHealth / maxHealth;
-        float barWidth = healthBarWidth * 0.64f; // 2x longer than before
+        float barWidth = healthBarWidth * 1.5f; // 2x longer than before
         float barHeight = healthBarHeight * 0.4f; // slightly bigger height
         float fillWidth = barWidth * healthPercentage;
         

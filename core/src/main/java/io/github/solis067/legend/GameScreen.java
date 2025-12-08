@@ -1,6 +1,7 @@
 package io.github.solis067.legend;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -78,6 +79,12 @@ public class GameScreen implements Screen {
 
     private void input() {
         player.input();
+        
+        // Handle slime respawn
+        if (slime.isDead() && (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || Gdx.input.isKeyJustPressed(Input.Keys.SPACE))) {
+            slime.respawn();
+            player.refillHealth();
+        }
     }
 
     private void logic(float delta) {

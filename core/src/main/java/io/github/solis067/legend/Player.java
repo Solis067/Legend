@@ -22,15 +22,11 @@ public class Player extends Entity {
     Animation<TextureRegion>[] runAnimations;
     Animation<TextureRegion>[] attackAnimations;
     Animation<TextureRegion>[] hitAnimations;
-
     Sound attackSound;
     Sound hitSound;
     Sound grassRunSound;
 
     Slime slimeInRange = null;
-    boolean slimeIsInRange = false;
-
-    private float runStepTimer = 0f;
 
     private final float playerWidth = ENTITY_WIDTH;
     private final float playerHeight = ENTITY_HEIGHT;
@@ -38,15 +34,18 @@ public class Player extends Entity {
     private enum Direction { DOWN, LEFT, RIGHT, UP }
     private Direction currentDirection; // 0: down, 1: left, 2: right, 3: up
     
-    boolean isAttacking = false;
-    boolean isTakingDamage = false;
-    float attackTime = 0f;
-    float damageTimer = 0f;
+    private boolean isAttacking = false;
+    private boolean isTakingDamage = false;
+    private boolean isKnockedBack = false;
+    private boolean slimeIsInRange = false;
     private boolean dead = false;
-    boolean isKnockedBack = false;
-    float knockbackTimer = 0f;
-    float KNOCKBACK_DURATION = 0.2f;
 
+    private float attackTime = 0f;
+    private float damageTimer = 0f;
+    private float knockbackTimer = 0f;
+    private float runStepTimer = 0f;
+
+    private final float KNOCKBACK_DURATION = 0.2f;
     private final float PLAYER_SPEED = 5.0f;
     private final float PLAYER_ANIMATION_SPEED = 1.5f; // lower is faster
     private static final float RUN_STEP_INTERVAL = 0.4f; // seconds between footstep sounds
@@ -59,16 +58,18 @@ public class Player extends Entity {
         vel = new Vector2(0, 0);
         this.id = id;
         health = 10;
+        currentDirection = Direction.DOWN;
 
         attackSound = Gdx.audio.newSound(Gdx.files.internal("Audio/Sounds/attack.mp3"));
         hitSound = Gdx.audio.newSound(Gdx.files.internal("Audio/Sounds/hit.mp3"));
         grassRunSound = Gdx.audio.newSound(Gdx.files.internal("Audio/Sounds/run_grass.mp3"));
 
         createBody(world, x, y);
-        currentDirection = Direction.DOWN;
-        setupAnimations();
         sword = new Sword(this, body);
+        setupAnimations();
+        
     }
+
     @SuppressWarnings("unchecked")
     private void setupAnimations() {
         // Setup the animations for each direction
@@ -135,7 +136,6 @@ public class Player extends Entity {
             vel.y = 0;
 
             if (slimeIsInRange) {
-                Gdx.app.log("Attack", "Attacking slime in range");
                 if (slimeInRange != null) {
                     // Calculate knockback direction from player to slime
                     Vector2 knockbackDir = new Vector2(
@@ -143,9 +143,6 @@ public class Player extends Entity {
                         slimeInRange.body.getPosition().y - body.getPosition().y
                     );
                     slimeInRange.takeDamage(5, knockbackDir);
-                }
-                else {
-                    Gdx.app.log("Attack", "No slime in range to attack");
                 }
             }
             if (attackSound != null) attackSound.play();
@@ -355,19 +352,24 @@ public class Player extends Entity {
         slimeIsInRange = inRange;
     }
 
+    public void refillHealth() {
+        health = 10;
+    }
+
     public void dispose() {
         disposeTextures(idleTextures);
         disposeTextures(runTextures);
         disposeTextures(attackTextures);
         disposeTextures(hitTextures);
-        if (attackSound != null) attackSound.dispose();
-        if (hitSound != null) hitSound.dispose();
-        if (grassRunSound != null) grassRunSound.dispose();
+
+        attackSound.dispose();
+        hitSound.dispose();
+        grassRunSound.dispose();
+
         if (sword != null) {
             sword.dispose();
             sword = null;
         }
-
         if (body != null && body.getWorld() != null) {
             body.getWorld().destroyBody(body);
             body = null;

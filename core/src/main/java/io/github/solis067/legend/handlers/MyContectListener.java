@@ -29,6 +29,7 @@ public class MyContectListener implements ContactListener {
                 Player player = (Player) ((fA.getUserData() instanceof Player) ? fA.getUserData() : fB.getUserData());
                 Slime slime = (Slime) ((fA.getUserData() instanceof Slime) ? fA.getUserData() : fB.getUserData());
                 // Calculate knockback direction from slime to player
+                if (slime.isDying()) return;
                 Vector2 knockbackDir = new Vector2(
                     player.body.getPosition().x - slime.body.getPosition().x,
                     player.body.getPosition().y - slime.body.getPosition().y

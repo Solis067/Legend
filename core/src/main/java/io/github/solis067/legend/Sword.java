@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 
 public class Sword {
     Player player;
+    
     private Body playerBody;
     private com.badlogic.gdx.physics.box2d.Fixture hitboxSensor;
     
