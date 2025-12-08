@@ -1,4 +1,5 @@
 # Legend
+My first game made with Java, inspired by The Legend of Zelda from the NES!
 
 A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://github.com/libgdx/gdx-liftoff).
 
