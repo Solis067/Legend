@@ -1,6 +1,7 @@
 package io.github.solis067.legend;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -8,7 +9,6 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.audio.Music;
 
@@ -27,7 +27,6 @@ public class GameScreen implements Screen {
     Music overworldTheme;
 
     World world;
-    Box2DDebugRenderer debugRenderer;
 
     MyContectListener contactListener;
     GameUI gameUI;
@@ -39,13 +38,12 @@ public class GameScreen implements Screen {
 
         // Load assets here.
         world = new World(new Vector2(0f, 0f), true);
-        debugRenderer = new Box2DDebugRenderer();
 
         contactListener = new MyContectListener();
         world.setContactListener(contactListener);
 
         player = new Player(world, "PLAYER", 40, 20);
-        slime = new Slime(world, "SLIME", 40, 25);
+        slime = new Slime(world, "SLIME", 40, 25, player);
         
         gameMap = new GameMap("Tiled/overworld1.tmx", world);
         overworldTheme = Gdx.audio.newMusic(Gdx.files.internal("Audio/Music/nes_07-jazz.wav"));
@@ -78,6 +76,12 @@ public class GameScreen implements Screen {
 
     private void input() {
         player.input();
+        
+        // Handle slime respawn
+        if (slime.isDead() && (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || Gdx.input.isKeyJustPressed(Input.Keys.SPACE))) {
+            slime.respawn();
+            player.refillHealth();
+        }
     }
 
     private void logic(float delta) {
@@ -116,7 +120,6 @@ public class GameScreen implements Screen {
 
         // Render Map
         gameMap.render(camera);
-        debugRenderer.render(world, camera.combined);
 
         // Sprites - draw entities in Y-order (higher Y = further back = drawn first)
 
@@ -185,7 +188,6 @@ public class GameScreen implements Screen {
         gameMap.dispose();
         gameUI.dispose();
         world.dispose();
-        debugRenderer.dispose();
         overworldTheme.dispose();
     }
 }

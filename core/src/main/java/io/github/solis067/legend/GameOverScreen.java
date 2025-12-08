@@ -25,7 +25,7 @@ public class GameOverScreen implements Screen {
     public GameOverScreen(Main game) {
         this.game = game;
         this.font = new BitmapFont();
-        this.font.getData().setScale(1f);
+        this.font.getData().setScale(1.5f);
         this.uiViewport = new ScreenViewport();
         this.uiViewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
     }

@@ -21,21 +21,16 @@ import java.util.List;
 public class GameMap {
     TiledMap tiledMap;
     TmxMapLoader mapLoader;
-    
     OrthogonalTiledMapRenderer mapRenderer;
 
     World world;
     List<Body> createdBodies = new ArrayList<>();
 
-    public GameMap(String mapFilePath) {
+    public GameMap(String mapFilePath, World world) {
         mapLoader = new TmxMapLoader();
         tiledMap = mapLoader.load(mapFilePath);
-
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap, Main.UNIT_SCALE);
-    }
-
-    public GameMap(String mapFilePath, World world) {
-        this(mapFilePath);
+        
         this.world = world;
 
         if (world == null) return;
