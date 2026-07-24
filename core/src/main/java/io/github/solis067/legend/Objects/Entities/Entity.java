@@ -1,10 +1,11 @@
-package io.github.solis067.legend;
+package io.github.solis067.legend.Objects.Entities;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import io.github.solis067.legend.Main;
 
 public class Entity {
     protected Vector2 pos;
@@ -29,7 +30,7 @@ public class Entity {
 
         TextureRegion[][] tmpFrames = TextureRegion.split(texture, frameWidth, frameHeight);
         TextureRegion[] animationFrames = new TextureRegion[cols];
-        
+
         for (int i = 0; i < cols; i++) {
             animationFrames[i] = tmpFrames[0][i];
         }
@@ -51,5 +52,12 @@ public class Entity {
 
     public void setHealth(int health) {
         this.health = health;
+    }
+
+    public float getPosX() {
+        return pos.x;
+    }
+    public float getPosY() {
+        return pos.y;
     }
 }

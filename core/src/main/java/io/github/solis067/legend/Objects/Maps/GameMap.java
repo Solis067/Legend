@@ -1,4 +1,4 @@
-package io.github.solis067.legend;
+package io.github.solis067.legend.Objects.Maps;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -15,6 +15,8 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import io.github.solis067.legend.Main;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +32,7 @@ public class GameMap {
         mapLoader = new TmxMapLoader();
         tiledMap = mapLoader.load(mapFilePath);
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap, Main.UNIT_SCALE);
-        
+
         this.world = world;
 
         if (world == null) return;

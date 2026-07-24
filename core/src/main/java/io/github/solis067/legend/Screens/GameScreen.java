@@ -1,4 +1,4 @@
-package io.github.solis067.legend;
+package io.github.solis067.legend.Screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -12,8 +12,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.audio.Music;
 
+import io.github.solis067.legend.Main;
+import io.github.solis067.legend.Objects.Entities.Player;
+import io.github.solis067.legend.Objects.Entities.Slime;
+import io.github.solis067.legend.Objects.Maps.GameMap;
 import io.github.solis067.legend.handlers.MyContectListener;
-import io.github.solis067.legend.ui.GameUI;
+import io.github.solis067.legend.Objects.Ui.GameUI;
 
 /** First screen of the application. Displayed after the application is created. */
 public class GameScreen implements Screen {
@@ -33,7 +37,6 @@ public class GameScreen implements Screen {
     private boolean gameOverTriggered = false;
 
     public GameScreen(Main game) {
-        // Initialize your screen here. Store a reference to the "game" instance if needed.
         this.game = game;
 
         // Load assets here.
@@ -44,7 +47,7 @@ public class GameScreen implements Screen {
 
         player = new Player(world, "PLAYER", 40, 20);
         slime = new Slime(world, "SLIME", 40, 25, player);
-        
+
         gameMap = new GameMap("Tiled/overworld1.tmx", world);
         overworldTheme = Gdx.audio.newMusic(Gdx.files.internal("Audio/Music/nes_07-jazz.wav"));
 
@@ -76,7 +79,7 @@ public class GameScreen implements Screen {
 
     private void input() {
         player.input();
-        
+
         // Handle slime respawn
         if (slime.isDead() && (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || Gdx.input.isKeyJustPressed(Input.Keys.SPACE))) {
             slime.respawn();
@@ -112,7 +115,7 @@ public class GameScreen implements Screen {
         game.viewport.apply();
 
         // Camera update
-        camera.position.set(player.pos.x + player.getWidth() / 2f, player.pos.y + player.getHeight() / 2f, 0f);
+        camera.position.set(player.getPosX() + player.getWidth() / 2f, player.getPosY() + player.getHeight() / 2f, 0f);
         // If you need to clamp the camera to map bounds, compute min/max x/y here and clamp camera.position.
         camera.position.x = MathUtils.clamp(camera.position.x, 0, gameMap.getSizeX());
         camera.position.y = MathUtils.clamp(camera.position.y, 0, gameMap.getSizeY());
@@ -134,7 +137,7 @@ public class GameScreen implements Screen {
         // Draw entities based on Y position
 
 
-        if (player.pos.y > slime.pos.y) {
+        if (player.getPosY() > slime.getPosY()) {
 
 
             player.draw(game);

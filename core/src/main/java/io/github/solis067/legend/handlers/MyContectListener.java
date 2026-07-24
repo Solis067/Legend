@@ -7,9 +7,9 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 
-import io.github.solis067.legend.Player;
-import io.github.solis067.legend.Slime;
-import io.github.solis067.legend.Sword;
+import io.github.solis067.legend.Objects.Entities.Player;
+import io.github.solis067.legend.Objects.Entities.Slime;
+import io.github.solis067.legend.Objects.Tools.Sword;
 
 public class MyContectListener implements ContactListener {
     private static final float PLAYER_HIT_COOLDOWN = 0.1f; // cooldown between hits in seconds
@@ -19,7 +19,7 @@ public class MyContectListener implements ContactListener {
     public void beginContact(Contact contact) {
         Fixture fA = contact.getFixtureA();
         Fixture fB = contact.getFixtureB();
-        
+
         if (fA == null || fB == null) return;
         if (fA.getUserData() == null || fB.getUserData() == null) return;
 
@@ -48,7 +48,7 @@ public class MyContectListener implements ContactListener {
             }
         }
     }
-    
+
     public void update(float delta) {
         if (playerHitCooldown > 0f) {
             playerHitCooldown -= delta;
@@ -59,7 +59,7 @@ public class MyContectListener implements ContactListener {
     public void endContact(Contact contact) {
         Fixture fA = contact.getFixtureA();
         Fixture fB = contact.getFixtureB();
-        
+
         if (fA == null || fB == null) return;
         if (fA.getUserData() == null || fB.getUserData() == null) return;
 

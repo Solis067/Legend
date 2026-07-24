@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "overworld1.tmx",
+    "activeFile": "",
     "expandedProjectPaths": [
         ".",
         "Rules"
@@ -63,11 +63,11 @@
             }
         },
         "overworld1.tmx": {
-            "scale": 2,
+            "scale": 1,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 551.75,
-                "y": 535.25
+                "x": 840.5,
+                "y": 600.5
             }
         },
         "water_tile_anim.tsx": {
@@ -88,7 +88,6 @@
     "map.tileWidth": 16,
     "map.width": 128,
     "openFiles": [
-        "overworld1.tmx"
     ],
     "project": "LegendTiled.tiled-project",
     "property.type": "bool",

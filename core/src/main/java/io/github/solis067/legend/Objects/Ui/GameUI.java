@@ -1,4 +1,4 @@
-package io.github.solis067.legend.ui;
+package io.github.solis067.legend.Objects.Ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -10,8 +10,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-import io.github.solis067.legend.Player;
-import io.github.solis067.legend.Slime;
+import io.github.solis067.legend.Objects.Entities.Player;
+import io.github.solis067.legend.Objects.Entities.Slime;
 
 /**
  * Manages the game UI using Scene2D and custom health bars
@@ -22,7 +22,7 @@ public class GameUI {
     private Label fpsLabel;
     private Player player;
     private Slime slime;
-    
+
     // Health bar textures and properties
     private Texture healthBarTexture;
     private Texture redPixelTexture;
@@ -90,7 +90,7 @@ public class GameUI {
     public void render() {
         // Draw health bars with custom rendering
         drawHealthBars();
-        
+
         // Draw the stage (FPS label)
         stage.draw();
     }
@@ -134,7 +134,7 @@ public class GameUI {
             font.setColor(Color.GREEN);
             float slimeTextY = slimeHealthY - 5f;
             font.draw(batch, "Slime HP: " + slime.getHealth() + " / " + SLIME_MAX_HEALTH, slimeHealthX, slimeTextY);
-            
+
             // Draw startup countdown at top right if greater than 0
             float countdown = slime.getStartupCountdown();
             if (countdown > 0) {
@@ -185,7 +185,7 @@ public class GameUI {
         float barWidth = healthBarWidth * 1.5f; // 2x longer than before
         float barHeight = healthBarHeight * 0.4f; // slightly bigger height
         float fillWidth = barWidth * healthPercentage;
-        
+
         // Draw the red health bar
         batch.setColor(Color.RED);
         if (fillWidth > 0 && barHeight > 0) {
@@ -214,7 +214,7 @@ public class GameUI {
     private void computeHealthBarPosition(int screenWidth, int screenHeight) {
         playerHealthX = 10f; // bottom-left padding
         playerHealthY = 10f; // bottom padding
-        
+
         // Position slime health bar at top center (using updated dimensions)
         float slimeBarWidth = healthBarWidth * 0.64f;
         slimeHealthX = (screenWidth - slimeBarWidth) / 2f - 80f;

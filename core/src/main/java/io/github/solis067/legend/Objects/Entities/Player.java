@@ -1,4 +1,4 @@
-package io.github.solis067.legend;
+package io.github.solis067.legend.Objects.Entities;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -11,6 +11,8 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.audio.Sound;
+import io.github.solis067.legend.Main;
+import io.github.solis067.legend.Objects.Tools.Sword;
 
 
 public class Player extends Entity {
@@ -33,7 +35,7 @@ public class Player extends Entity {
 
     private enum Direction { DOWN, LEFT, RIGHT, UP }
     private Direction currentDirection; // 0: down, 1: left, 2: right, 3: up
-    
+
     private boolean isAttacking = false;
     private boolean isTakingDamage = false;
     private boolean isKnockedBack = false;
@@ -67,7 +69,7 @@ public class Player extends Entity {
         createBody(world, x, y);
         sword = new Sword(this, body);
         setupAnimations();
-        
+
     }
 
     @SuppressWarnings("unchecked")
@@ -119,7 +121,7 @@ public class Player extends Entity {
 
         this.body = world.createBody(bodyDef);
         this.body.setLinearDamping(5.0f); // Higher damping for smoother knockback deceleration
-        
+
         this.body.createFixture(fixture).setUserData(this);
 
         shape.dispose();
@@ -128,7 +130,7 @@ public class Player extends Entity {
     public void input() {
         vel.x = 0;
         vel.y = 0;
-        
+
         if (Gdx.input.isKeyJustPressed(Input.Keys.Z) && !isAttacking) {
             isAttacking = true;
             attackTime = 0f;
@@ -156,14 +158,14 @@ public class Player extends Entity {
         // Left and right input
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             vel.x = PLAYER_SPEED;
-        } 
+        }
         else if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             vel.x = -PLAYER_SPEED;
         }
         // Up and down input
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
             vel.y = PLAYER_SPEED;
-        } 
+        }
         else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             vel.y = -PLAYER_SPEED;
         }
@@ -202,7 +204,7 @@ public class Player extends Entity {
                 stateTime = 0f;
             }
         }
-        
+
         // Update knockback state
         if (isKnockedBack) {
             knockbackTimer += delta;
@@ -305,7 +307,7 @@ public class Player extends Entity {
         if (dead) {
             return;
         }
-        
+
         damageTimer = 0f; // reset damage timer to start hit animation from beginning
         isTakingDamage = true;
         health = Math.max(health - damage, 0);
@@ -315,7 +317,7 @@ public class Player extends Entity {
             dead = true;
             vel.setZero();
         }
-        
+
         // Apply smooth knockback
         if (knockbackDirection != null && body != null && !dead) {
             isKnockedBack = true;
@@ -325,7 +327,7 @@ public class Player extends Entity {
             body.setLinearVelocity(knockback);
         }
     }
-    
+
     // Overload for backward compatibility
     public void takeDamage(int damage) {
         takeDamage(damage, null);
@@ -374,5 +376,5 @@ public class Player extends Entity {
             body.getWorld().destroyBody(body);
             body = null;
         }
-    } 
+    }
 }

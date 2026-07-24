@@ -1,4 +1,6 @@
-package io.github.solis067.legend;
+package io.github.solis067.legend.Screens;
+
+import io.github.solis067.legend.Main;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;

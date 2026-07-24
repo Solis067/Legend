@@ -1,4 +1,4 @@
-package io.github.solis067.legend;
+package io.github.solis067.legend.Objects.Entities;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.Gdx;
@@ -10,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.Fixture;
+import io.github.solis067.legend.Main;
 
 public class Slime extends Entity {
 
@@ -38,9 +39,9 @@ public class Slime extends Entity {
     final float ANIMATION_SPEED = 1.5f;
     final float MOVEMENT_SPEED = 3f;
     final float STARTUP_DELAY = 5f;
-    
+
     float startupCountdown = STARTUP_DELAY;
-    
+
     private int spawnX;
     private int spawnY;
     private World world;
@@ -100,7 +101,7 @@ public class Slime extends Entity {
         if (isDead) return; // Don't update if already dead
 
         stateTime += delta;
-        
+
         // Decrement startup countdown
         if (startupCountdown > 0) {
             startupCountdown -= delta;
@@ -110,7 +111,7 @@ public class Slime extends Entity {
         if (isDying) {
             damageTimer += delta;
             currentFrame = deathAnimation.getKeyFrame(damageTimer, false);
-            
+
             // When death animation finishes, mark as dead
             if (deathAnimation.isAnimationFinished(damageTimer)) {
                 isDead = true;
@@ -133,7 +134,7 @@ public class Slime extends Entity {
                 stateTime = 0f;
             }
         }
-        
+
         // Update knockback state
         if (isKnockedBack) {
             knockbackTimer += delta;
@@ -149,10 +150,10 @@ public class Slime extends Entity {
             if (player != null && player.body != null) {
                 Vector2 playerPos = player.body.getPosition();
                 Vector2 slimePos = body.getPosition();
-                
+
                 // Calculate direction to player
                 Vector2 direction = playerPos.cpy().sub(slimePos).nor();
-                
+
                 // Set velocity towards player
                 vel = direction.scl(MOVEMENT_SPEED);
             }
@@ -176,7 +177,7 @@ public class Slime extends Entity {
     public void draw(Main game) {
         // Don't draw if dead
         if (isDead) return;
-        
+
         // Drawing logic goes here
         game.batch.draw(currentFrame, pos.x, pos.y, ENTITY_WIDTH, ENTITY_HEIGHT);
     }
@@ -197,7 +198,7 @@ public class Slime extends Entity {
 
         damageTimer = 0f;
         isTakingDamage = true;
-        
+
         // Apply smooth knockback
         if (knockbackDirection != null && body != null) {
             isKnockedBack = true;
@@ -207,7 +208,7 @@ public class Slime extends Entity {
             body.setLinearVelocity(knockback);
         }
     }
-    
+
     // Overload for backward compatibility (if needed elsewhere)
     public void takeDamage(int damage) {
         takeDamage(damage, null);
@@ -220,11 +221,11 @@ public class Slime extends Entity {
     public boolean isDying() {
         return isDying;
     }
-    
+
     public float getStartupCountdown() {
         return startupCountdown;
     }
-    
+
     public void respawn() {
         // Reset state
         health = 50;
@@ -237,7 +238,7 @@ public class Slime extends Entity {
         startupCountdown = STARTUP_DELAY;
         stateTime = 0f;
         vel = new Vector2(0, 0);
-        
+
         // Recreate body at spawn location
         if (body != null && body.getWorld() != null) {
             body.getWorld().destroyBody(body);
