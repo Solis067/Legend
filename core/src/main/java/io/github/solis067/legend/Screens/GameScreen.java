@@ -70,18 +70,23 @@ public class GameScreen implements Screen {
     }
 
     private void input() {
-        player.input();
+        player.resetVelocity();
+        if (Gdx.input.isKeyJustPressed(Input.Keys.Z)) player.attack();
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) player.moveLeft();
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) player.moveRight();
+        if (Gdx.input.isKeyPressed(Input.Keys.UP)) player.moveUp();
+        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) player.moveDown();
 
-        // Handle slime respawn
-        if (slime.isDead() && (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || Gdx.input.isKeyJustPressed(Input.Keys.SPACE))) {
-            slime.respawn();
-            player.refillHealth();
+        if (slime.isDead()) {
+            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+                slime.respawn();
+                player.refillHealth();
+            }
         }
     }
 
     private void logic(float delta) {
-        if (player.isDead()) { GameOver(); }
-
+        if (player.isDead()) GameOver();
         world.step(delta, 6, 2);
         slime.update(delta);
         player.update(delta);

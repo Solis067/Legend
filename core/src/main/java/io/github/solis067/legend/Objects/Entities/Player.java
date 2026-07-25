@@ -8,7 +8,6 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.audio.Sound;
@@ -43,9 +42,7 @@ public class Player extends Entity {
     private float knockbackTimer = 0f;
     private float runStepTimer = 0f;
 
-    private final float KNOCKBACK_DURATION = 0.2f;
     private final float PLAYER_SPEED = 5.0f;
-    private final float PLAYER_ANIMATION_SPEED = 1.5f; // lower is faster
     private static final float RUN_STEP_INTERVAL = 0.4f; // seconds between footstep sounds
 
     // Sword with hitbox sensor
@@ -80,6 +77,8 @@ public class Player extends Entity {
 
         String[] dirNames = new String[] {"down", "left", "right", "up"};
         for (int i = 0; i < dirCount; i++) {
+            // lower is faster
+            float PLAYER_ANIMATION_SPEED = 1.5f;
             idleAnimations[i] = new Animation<>(0.1f * PLAYER_ANIMATION_SPEED, atlas.findRegions("idle_" + dirNames[i]));
             runAnimations[i] = new Animation<>(0.1f * PLAYER_ANIMATION_SPEED, atlas.findRegions("run_" + dirNames[i]));
             attackAnimations[i] = new Animation<>(0.1f * PLAYER_ANIMATION_SPEED / 1.5f, atlas.findRegions("attack_" + dirNames[i]));
@@ -111,48 +110,46 @@ public class Player extends Entity {
         shape.dispose();
     }
 
-    public void input() {
+    public void resetVelocity() {
+        vel.x = 0;
+        vel.y = 0;
+    }
+
+    public void attack(){
+        if (isAttacking) return;
+        isAttacking = true;
+        attackTime = 0f;
         vel.x = 0;
         vel.y = 0;
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.Z) && !isAttacking) {
-            isAttacking = true;
-            attackTime = 0f;
-            vel.x = 0;
-            vel.y = 0;
-
-            if (slimeIsInRange) {
-                if (slimeInRange != null) {
-                    // Calculate knockback direction from player to slime
-                    Vector2 knockbackDir = new Vector2(
-                        slimeInRange.body.getPosition().x - body.getPosition().x,
-                        slimeInRange.body.getPosition().y - body.getPosition().y
-                    );
-                    slimeInRange.takeDamage(5, knockbackDir);
-                }
+        if (slimeIsInRange) {
+            if (slimeInRange != null) {
+                // Calculate knockback direction from player to slime
+                Vector2 knockbackDir = new Vector2(
+                    slimeInRange.body.getPosition().x - body.getPosition().x,
+                    slimeInRange.body.getPosition().y - body.getPosition().y
+                );
+                slimeInRange.takeDamage(5, knockbackDir);
             }
-            if (attackSound != null) attackSound.play();
-            return;
         }
+        if (attackSound != null) attackSound.play();
+    }
 
-        if (isAttacking || isTakingDamage) {
-            return;
-        }
-
-        // Left and right input
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            vel.x = PLAYER_SPEED;
-        }
-        else if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            vel.x = -PLAYER_SPEED;
-        }
-        // Up and down input
-        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            vel.y = PLAYER_SPEED;
-        }
-        else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            vel.y = -PLAYER_SPEED;
-        }
+    public void moveRight(){
+        if (isAttacking || isTakingDamage) return;
+        vel.x = PLAYER_SPEED;
+    }
+    public void moveLeft() {
+        if (isAttacking || isTakingDamage) return;
+        vel.x = -PLAYER_SPEED;
+    }
+    public void moveUp() {
+        if (isAttacking || isTakingDamage) return;
+        vel.y = PLAYER_SPEED;
+    }
+    public void moveDown() {
+        if (isAttacking || isTakingDamage) return;
+        vel.y = -PLAYER_SPEED;
     }
 
     @Override
@@ -193,6 +190,7 @@ public class Player extends Entity {
         // Update knockback state
         if (isKnockedBack) {
             knockbackTimer += delta;
+            float KNOCKBACK_DURATION = 0.2f;
             if (knockbackTimer >= KNOCKBACK_DURATION) {
                 isKnockedBack = false;
                 knockbackTimer = 0f;
@@ -314,17 +312,8 @@ public class Player extends Entity {
         }
     }
 
-    // Overload for backward compatibility
-    public void takeDamage(int damage) {
-        takeDamage(damage, null);
-    }
-
     public boolean isDead() {
         return dead;
-    }
-
-    public boolean isAttacking() {
-        return isAttacking;
     }
 
     public float getWidth() {
