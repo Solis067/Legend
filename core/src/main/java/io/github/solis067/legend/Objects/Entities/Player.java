@@ -1,6 +1,7 @@
 package io.github.solis067.legend.Objects.Entities;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -16,10 +17,8 @@ import io.github.solis067.legend.Objects.Tools.Sword;
 
 
 public class Player extends Entity {
-    Texture[] idleTextures;
-    Texture[] runTextures;
-    Texture[] attackTextures;
-    Texture[] hitTextures;
+
+    TextureAtlas atlas;
     Animation<TextureRegion>[] idleAnimations;
     Animation<TextureRegion>[] runAnimations;
     Animation<TextureRegion>[] attackAnimations;
@@ -68,6 +67,7 @@ public class Player extends Entity {
 
         createBody(world, x, y);
         sword = new Sword(this, body);
+        this.atlas = new TextureAtlas(Gdx.files.internal("Char_Sprites/Atlas/player.atlas"));
         setupAnimations();
 
     }
@@ -76,11 +76,6 @@ public class Player extends Entity {
     private void setupAnimations() {
         // Setup the animations for each direction
         int dirCount = Direction.values().length;
-        idleTextures = new Texture[dirCount];
-        runTextures = new Texture[dirCount];
-        attackTextures = new Texture[dirCount];
-        hitTextures = new Texture[dirCount];
-
         idleAnimations = new Animation[dirCount];
         runAnimations = new Animation[dirCount];
         attackAnimations = new Animation[dirCount];
@@ -88,17 +83,10 @@ public class Player extends Entity {
 
         String[] dirNames = new String[] {"down", "left", "right", "up"};
         for (int i = 0; i < dirCount; i++) {
-            idleTextures[i] = new Texture(Gdx.files.internal("Char_Sprites/char_idle_" + dirNames[i] + "_anim_strip_6.png"));
-            idleAnimations[i] = makeAnimation(idleTextures[i], 6, 1, PLAYER_ANIMATION_SPEED);
-
-            runTextures[i] = new Texture(Gdx.files.internal("Char_Sprites/char_run_" + dirNames[i] + "_anim_strip_6.png"));
-            runAnimations[i] = makeAnimation(runTextures[i], 6, 1, PLAYER_ANIMATION_SPEED);
-
-            attackTextures[i] = new Texture(Gdx.files.internal("Char_Sprites/char_attack_" + dirNames[i] + "_anim_strip_6.png"));
-            attackAnimations[i] = makeAnimation(attackTextures[i], 6, 1, PLAYER_ANIMATION_SPEED / 1.5f);
-
-            hitTextures[i] = new Texture(Gdx.files.internal("Char_Sprites/char_hit_" + dirNames[i] + "_anim_strip_3.png"));
-            hitAnimations[i] = makeAnimation(hitTextures[i], 3, 1, PLAYER_ANIMATION_SPEED / 2f);
+            idleAnimations[i] = new Animation<>(0.1f * PLAYER_ANIMATION_SPEED, atlas.findRegions("idle_" + dirNames[i]));
+            runAnimations[i] = new Animation<>(0.1f * PLAYER_ANIMATION_SPEED, atlas.findRegions("run_" + dirNames[i]));
+            attackAnimations[i] = new Animation<>(0.1f * PLAYER_ANIMATION_SPEED / 1.5f, atlas.findRegions("attack_" + dirNames[i]));
+            hitAnimations[i] = new Animation<>(0.1f * PLAYER_ANIMATION_SPEED / 2f, atlas.findRegions("hit_" + dirNames[i]));
         }
 
         currentFrame = idleAnimations[currentDirection.ordinal()].getKeyFrame(0);
@@ -359,11 +347,6 @@ public class Player extends Entity {
     }
 
     public void dispose() {
-        disposeTextures(idleTextures);
-        disposeTextures(runTextures);
-        disposeTextures(attackTextures);
-        disposeTextures(hitTextures);
-
         attackSound.dispose();
         hitSound.dispose();
         grassRunSound.dispose();
