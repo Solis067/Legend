@@ -164,7 +164,7 @@ public class GameUI {
 
         // Draw red rectangle for health
         batch.setColor(Color.RED);
-        // Use a simple 1x1 white pixel texture to draw the fill
+        // Use a simple 1x1 white pixel texture to render the fill
         drawRedFill(x + offsetX, y + offsetY, fillWidth, fillHeight);
         batch.setColor(Color.WHITE);
 

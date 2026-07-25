@@ -1,9 +1,9 @@
 package io.github.solis067.legend.Objects.Entities;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -11,7 +11,6 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.Fixture;
-import io.github.solis067.legend.Main;
 
 public class Slime extends Entity {
 
@@ -38,9 +37,9 @@ public class Slime extends Entity {
 
     float startupCountdown = STARTUP_DELAY;
 
-    private int spawnX;
-    private int spawnY;
-    private World world;
+    private final int spawnX;
+    private final int spawnY;
+    private final World world;
 
     public Slime(World world, String id, int x , int y, Player player) {
         this.pos = new Vector2(x, y);
@@ -166,12 +165,9 @@ public class Slime extends Entity {
     }
 
     @Override
-    public void draw(Main game) {
-        // Don't draw if dead
+    public void render(SpriteBatch batch) {
         if (isDead) return;
-
-        // Drawing logic goes here
-        game.batch.draw(currentFrame, pos.x, pos.y, ENTITY_WIDTH, ENTITY_HEIGHT);
+        batch.draw(currentFrame, pos.x, pos.y, ENTITY_WIDTH, ENTITY_HEIGHT);
     }
 
     public void takeDamage(int damage, Vector2 knockbackDirection) {

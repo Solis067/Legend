@@ -5,8 +5,8 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
@@ -21,11 +21,11 @@ import io.github.solis067.legend.Objects.Ui.GameUI;
 
 /** First screen of the application. Displayed after the application is created. */
 public class GameScreen implements Screen {
-    final Main game;
+    private final Main game;
+    private final SpriteBatch batch;
+    private final Player player;
+    private final Slime slime;
 
-    Texture playerTexture;
-    Player player;
-    Slime slime;
     GameMap gameMap;
     OrthographicCamera camera;
     Music overworldTheme;
@@ -34,33 +34,29 @@ public class GameScreen implements Screen {
 
     MyContectListener contactListener;
     GameUI gameUI;
-    private boolean gameOverTriggered = false;
 
     public GameScreen(Main game) {
         this.game = game;
+        this.batch = game.batch;
 
-        // Load assets here.
-        world = new World(new Vector2(0f, 0f), true);
+        this.world = new World(new Vector2(0f, 0f), true);
+        this.contactListener = new MyContectListener();
+        this.world.setContactListener(contactListener);
 
-        contactListener = new MyContectListener();
-        world.setContactListener(contactListener);
+        this.player = new Player(world, "PLAYER", 40, 20);
+        this.slime = new Slime(world, "SLIME", 40, 25, player);
+        this.gameMap = new GameMap("Tiled/overworld1.tmx", world);
+        this.gameUI = new GameUI(player, slime);
 
-        player = new Player(world, "PLAYER", 40, 20);
-        slime = new Slime(world, "SLIME", 40, 25, player);
+        this.overworldTheme = Gdx.audio.newMusic(Gdx.files.internal("Audio/Music/nes_07-jazz.wav"));
 
-        gameMap = new GameMap("Tiled/overworld1.tmx", world);
-        overworldTheme = Gdx.audio.newMusic(Gdx.files.internal("Audio/Music/nes_07-jazz.wav"));
-
-        gameUI = new GameUI(player, slime);
-
-        camera = (OrthographicCamera) game.viewport.getCamera();
-        camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        camera.zoom = 1f; // less is closer, more is farther
+        this.camera = (OrthographicCamera) game.viewport.getCamera();
+        this.camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        this.camera.zoom = 1f; // less is closer, more is farther
     }
 
     @Override
     public void show() {
-        // Prepare your screen here.
         overworldTheme.setLooping(true);
         overworldTheme.setVolume(0.4f);
         overworldTheme.play();
@@ -68,12 +64,8 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        // Draw your screen here. "delta" is the time since last render in seconds.
         input();
         logic(delta);
-        if (checkGameOver()) {
-            return;
-        }
         draw();
     }
 
@@ -88,26 +80,13 @@ public class GameScreen implements Screen {
     }
 
     private void logic(float delta) {
+        if (player.isDead()) { GameOver(); }
+
         world.step(delta, 6, 2);
         slime.update(delta);
         player.update(delta);
         contactListener.update(delta);
         gameUI.update(delta);
-    }
-
-    private boolean checkGameOver() {
-        if (gameOverTriggered) {
-            return true;
-        }
-
-        if (player.isDead()) {
-            gameOverTriggered = true;
-            game.setScreen(new GameOverScreen(game));
-            dispose();
-            return true;
-        }
-
-        return false;
     }
 
     private void draw() {
@@ -121,51 +100,30 @@ public class GameScreen implements Screen {
         camera.position.y = MathUtils.clamp(camera.position.y, 0, gameMap.getSizeY());
         camera.update();
 
-        // Render Map
         gameMap.render(camera);
 
-        // Sprites - draw entities in Y-order (higher Y = further back = drawn first)
-
-
         game.batch.setProjectionMatrix(camera.combined);
-
-
         game.batch.begin();
 
-
-
         // Draw entities based on Y position
-
-
         if (player.getPosY() > slime.getPosY()) {
-
-
-            player.draw(game);
-
-
-            slime.draw(game);
-
-
+            player.render(batch);
+            slime.render(batch);
         } else {
-
-
-            slime.draw(game);
-
-
-            player.draw(game);
-
-
+            slime.render(batch);
+            player.render(batch);
         }
 
         game.batch.end();
-
-        // Render UI
         gameUI.render();
+    }
+
+    private void GameOver() {
+        game.setScreen(new GameOverScreen(game));
     }
 
     @Override
     public void resize(int width, int height) {
-        game.viewport.update(width, height, true);
         gameUI.resize(width, height);
     }
 
@@ -181,13 +139,13 @@ public class GameScreen implements Screen {
 
     @Override
     public void hide() {
-        // This method is called when another screen replaces this one.
         overworldTheme.stop();
     }
 
     @Override
     public void dispose() {
         player.dispose();
+        slime.dispose();
         gameMap.dispose();
         gameUI.dispose();
         world.dispose();

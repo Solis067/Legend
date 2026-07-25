@@ -28,7 +28,15 @@ public class Main extends Game {
         super.render();
     }
 
+    @Override
+    public void resize(int width, int height) {
+        viewport.update(width, height, true);
+        super.resize(width, height);
+    }
+
+    @Override
     public void dispose() {
+        super.dispose();
         batch.dispose();
         font.dispose();
     }

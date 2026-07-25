@@ -1,6 +1,6 @@
 package io.github.solis067.legend.Objects.Entities;
 
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -12,7 +12,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.audio.Sound;
-import io.github.solis067.legend.Main;
 import io.github.solis067.legend.Objects.Tools.Sword;
 
 
@@ -72,7 +71,7 @@ public class Player extends Entity {
 
     @SuppressWarnings("unchecked")
     private void setupAnimations() {
-        // Setup the animations for each direction
+        // Set up the animations for each direction
         int dirCount = Direction.values().length;
         idleAnimations = new Animation[dirCount];
         runAnimations = new Animation[dirCount];
@@ -256,7 +255,7 @@ public class Player extends Entity {
     }
 
     @Override
-    public void draw(Main game) {
+    public void render(SpriteBatch batch) {
         float drawWidth = playerWidth;
         float drawHeight = playerHeight;
         float offsetX = 0f;
@@ -287,7 +286,7 @@ public class Player extends Entity {
             }
         }
 
-        game.batch.draw(currentFrame, pos.x + offsetX, pos.y + offsetY, drawWidth, drawHeight);
+        batch.draw(currentFrame, pos.x + offsetX, pos.y + offsetY, drawWidth, drawHeight);
     }
 
     public void takeDamage(int damage, Vector2 knockbackDirection) {
