@@ -65,7 +65,7 @@ public class Player extends Entity {
 
         createBody(world, x, y);
         sword = new Sword(this, body);
-        this.atlas = new TextureAtlas(Gdx.files.internal("Char_Sprites/Atlas/player.atlas"));
+        this.atlas = new TextureAtlas(Gdx.files.internal("Character/Atlas/player.atlas"));
         setupAnimations();
 
     }
@@ -346,6 +346,7 @@ public class Player extends Entity {
     }
 
     public void dispose() {
+        atlas.dispose();
         attackSound.dispose();
         hitSound.dispose();
         grassRunSound.dispose();

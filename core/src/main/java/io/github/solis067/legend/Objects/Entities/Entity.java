@@ -57,4 +57,5 @@ public abstract class Entity {
     public float getPosY() {
         return pos.y;
     }
+
 }

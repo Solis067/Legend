@@ -1,5 +1,6 @@
 package io.github.solis067.legend.Objects.Entities;
 
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -14,11 +15,6 @@ import io.github.solis067.legend.Main;
 
 public class Slime extends Entity {
 
-    // Textures and animations
-    Texture idleTexture;
-    Texture hitTexture;
-    Texture runTexture;
-    Texture deathTexture;
     Animation<TextureRegion> idleAnimation;
     Animation<TextureRegion> hitAnimation;
     Animation<TextureRegion> runAnimation;
@@ -26,7 +22,7 @@ public class Slime extends Entity {
 
     Fixture slimeFixture;
 
-    private Player player;
+    private final Player player;
 
     boolean isTakingDamage = false;
     boolean isKnockedBack = false;
@@ -47,31 +43,25 @@ public class Slime extends Entity {
     private World world;
 
     public Slime(World world, String id, int x , int y, Player player) {
-        pos = new Vector2(x, y);
-        vel = new Vector2(0, 0);
+        this.pos = new Vector2(x, y);
+        this.vel = new Vector2(0, 0);
         this.id = id;
         this.player = player;
         this.world = world;
         this.spawnX = x;
         this.spawnY = y;
-
-        health = 50;
+        this.health = 50;
+        this.atlas = new TextureAtlas(Gdx.files.internal("Enemies/Pinkslime/Atlas/slime.atlas"));
 
         createBody(world, x, y);
         setupAnimations();
     }
 
     private void setupAnimations() {
-        idleTexture = new Texture(Gdx.files.internal("Enemies_Sprites/Pinkslime_Sprites/pinkslime_idle_anim_all_dir_strip_6.png"));
-        hitTexture = new Texture(Gdx.files.internal("Enemies_Sprites/Pinkslime_Sprites/pinkslime_hit_anim_all_dir_strip_4.png"));
-        runTexture = new Texture(Gdx.files.internal("Enemies_Sprites/Pinkslime_Sprites/pinkslime_run_anim_all_dir_strip_6.png"));
-        deathTexture = new Texture(Gdx.files.internal("Enemies_Sprites/Pinkslime_Sprites/pinkslime_death_anim_all_dir_strip_8.png"));
-
-        idleAnimation = makeAnimation(idleTexture, 6, 1, ANIMATION_SPEED);
-        hitAnimation = makeAnimation(hitTexture, 4, 1, ANIMATION_SPEED / 1.5f);
-        runAnimation = makeAnimation(runTexture, 6, 1, ANIMATION_SPEED);
-        deathAnimation = makeAnimation(deathTexture, 8, 1, ANIMATION_SPEED / 2f);
-
+        idleAnimation = new Animation<>(0.1f * ANIMATION_SPEED, atlas.findRegions("idle"));
+        hitAnimation = new Animation<>(0.1f * ANIMATION_SPEED / 1.5f, atlas.findRegions("hit"));
+        runAnimation = new Animation<>(0.1f * ANIMATION_SPEED, atlas.findRegions("run"));
+        deathAnimation = new Animation<>(0.1f * ANIMATION_SPEED / 2f, atlas.findRegions("death"));
         currentFrame = idleAnimation.getKeyFrame(0);
     }
 
@@ -250,9 +240,6 @@ public class Slime extends Entity {
     }
 
     public void dispose() {
-        idleTexture.dispose();
-        hitTexture.dispose();
-        runTexture.dispose();
-        deathTexture.dispose();
+        atlas.dispose();
     }
 }
