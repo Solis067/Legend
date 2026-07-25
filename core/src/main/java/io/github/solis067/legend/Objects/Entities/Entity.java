@@ -2,14 +2,16 @@ package io.github.solis067.legend.Objects.Entities;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import io.github.solis067.legend.Main;
 
-public class Entity {
+public abstract class Entity {
     protected Vector2 pos;
     protected Vector2 vel;
+    protected TextureAtlas atlas;
     protected TextureRegion currentFrame;
 
     public Body body;
@@ -22,6 +24,9 @@ public class Entity {
 
     final float ENTITY_WIDTH = Main.TILE_PIXELS * Main.UNIT_SCALE;
     final float ENTITY_HEIGHT = Main.TILE_PIXELS * Main.UNIT_SCALE;
+
+    public abstract void update(float delta);
+    public abstract void draw(Main game);
 
     protected Animation<TextureRegion> makeAnimation(Texture texture, int cols, int rows, float speed) {
         // determine per-texture frame dimensions so different-sized source images split correctly
@@ -36,14 +41,6 @@ public class Entity {
         }
 
         return new Animation<TextureRegion>(0.1f * speed, animationFrames);
-    }
-
-    protected void disposeTextures(Texture[] textures) {
-        if (textures != null) {
-            for (Texture t : textures) {
-                if (t != null) t.dispose();
-            }
-        }
     }
 
     public int getHealth() {

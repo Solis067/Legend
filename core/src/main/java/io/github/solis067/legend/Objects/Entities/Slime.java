@@ -97,6 +97,7 @@ public class Slime extends Entity {
         shape.dispose();
     }
 
+    @Override
     public void update(float delta) {
         if (isDead) return; // Don't update if already dead
 
@@ -174,6 +175,7 @@ public class Slime extends Entity {
         }
     }
 
+    @Override
     public void draw(Main game) {
         // Don't draw if dead
         if (isDead) return;

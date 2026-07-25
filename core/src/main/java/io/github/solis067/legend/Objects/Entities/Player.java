@@ -17,8 +17,6 @@ import io.github.solis067.legend.Objects.Tools.Sword;
 
 
 public class Player extends Entity {
-
-    TextureAtlas atlas;
     Animation<TextureRegion>[] idleAnimations;
     Animation<TextureRegion>[] runAnimations;
     Animation<TextureRegion>[] attackAnimations;
@@ -88,7 +86,6 @@ public class Player extends Entity {
             attackAnimations[i] = new Animation<>(0.1f * PLAYER_ANIMATION_SPEED / 1.5f, atlas.findRegions("attack_" + dirNames[i]));
             hitAnimations[i] = new Animation<>(0.1f * PLAYER_ANIMATION_SPEED / 2f, atlas.findRegions("hit_" + dirNames[i]));
         }
-
         currentFrame = idleAnimations[currentDirection.ordinal()].getKeyFrame(0);
     }
 
@@ -159,6 +156,7 @@ public class Player extends Entity {
         }
     }
 
+    @Override
     public void update(float delta) {
         stateTime += delta;
 
@@ -257,6 +255,7 @@ public class Player extends Entity {
         }
     }
 
+    @Override
     public void draw(Main game) {
         float drawWidth = playerWidth;
         float drawHeight = playerHeight;
